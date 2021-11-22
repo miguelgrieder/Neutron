@@ -39,7 +39,8 @@ def main():
 
     sorted_pieces = sorted(generator.pieces, key= lambda x: x.floor, reverse=True)
 
-    def on_click(event):
+
+    def on_click(event): 
 
         for piece in sorted_pieces:
 
@@ -50,7 +51,7 @@ def main():
                 piece_size.height
             )
 
-            if pointInRect((event.x, event.y), rect):
+            if pointInRect((event.x, event.y), rect): 
                 print('piece: ', (piece.row, piece.col, piece.floor))
                 piece.is_focused = True
                 generator.render_pieces(renderer)
@@ -75,7 +76,9 @@ def main():
     recomecar = tk.Button(ws,text="Recomeçar")
     recomecar.place(x=510,y=600,width=100,height=20)
 
-    placar = tk.Label(ws,bg = '#6e7482', fg='#ffffff',text="Tempo: 24 seg.")
+    time = "5"
+    time_type = " segundos"
+    placar = tk.Label(ws,bg = '#6e7482', fg='#ffffff',text=("Tempo: ", time, time_type ))
     placar.place(x=220,y=600,width=200,height=20)
 
     ws.mainloop()
