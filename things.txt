@@ -1,0 +1,21 @@
+..####
+..####
+..####
+..####
+---
+..##
+####
+####
+..##
+---
+
+....
+.##.
+.##.
+....
+
+# 1. remover linhas vazias e espaços
+# 2. encontrar hashtags
+# 3. verificar que os hashtags são válidos
+# 4. listar as linhas e colunas dos hashtags (superior esquerdo)
+# 5. renderizar
