@@ -1,27 +1,57 @@
 
 
 import tkinter as tk
-import PIL
+
+from coordinates import Point, Size
+
 
 def render_piece(row, col, canvas: tk.Canvas):
 
-    piece_width = 40
-    piece_height = 70
+    piece_size = Size(40, 70)
 
-    upleft_x = col * piece_width
-    upleft_y = row * piece_height
+    upleft = Point(col * piece_size.width, row * piece_size.height)
 
-    downright_x = upleft_x + piece_width
-    downright_y = upleft_y + piece_height
+    downright = Point(upleft.x + piece_size.width, upleft.y + piece_size.height)
 
 
     canvas.create_rectangle(
-        upleft_x,
-        upleft_y,
-        downright_x,
-        downright_y,
+        upleft.to_tuple(),
+        downright.to_tuple(),
         fill = '#E8533E'
         )
+
+    render_left_polygon(canvas, upleft, piece_size)
+
+
+def render_left_polygon(canvas, rectangle_upleft, piece_size):
+
+    offset = 15
+
+    polygon_upleft = Point(
+        rectangle_upleft.x - offset,
+         rectangle_upleft.y + offset)
+
+    polygon_downleft = Point(
+        polygon_upleft.x,
+        polygon_upleft.y + piece_size.height)
+
+    polygon_downright = Point(
+        polygon_downleft.x + offset,
+         polygon_downleft.y - offset)
+
+    polygon_upright = Point(
+        polygon_downright.x,
+         polygon_downright.y - piece_size.height)
+
+    canvas.create_polygon(
+        polygon_upleft.to_tuple(),
+        polygon_downleft.to_tuple(),
+        polygon_downright.to_tuple(),
+        polygon_upright.to_tuple(),
+        fill = '#E8533E',
+        outline='#000000'
+
+    )
 
 
 def main():
@@ -44,15 +74,7 @@ def main():
         
     canvas.pack()
 
-    render_piece(0, 0, canvas)
-    render_piece(0, 1, canvas)
-    render_piece(0, 2, canvas)
-    render_piece(0, 3, canvas)
-
-    render_piece(1, 0, canvas)
     render_piece(1, 1, canvas)
-    render_piece(1, 2, canvas)
-    render_piece(1, 3, canvas)
 
     ws.mainloop()
 
