@@ -1,5 +1,6 @@
-
 from renderer import Renderer
+
+#class DirectPieceGenerator(renderer), class Position(row, col, floor), class StorePieceGenerator
 
 class DirectPieceGenerator:
 

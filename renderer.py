@@ -5,7 +5,7 @@ from coordinates import Point, Size
 offset = 15
 
 piece_size = Size(40, 70)
-
+#class Renderer(canvas)
 class Renderer:
 
     def __init__(self, canvas):

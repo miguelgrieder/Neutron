@@ -1,3 +1,4 @@
+#def show_default_map(generator), layer1(generator) -- layer4(generator), before_extras(generator), after_extras(generator)
 
 def show_default_map(generator):
     before_extras(generator)

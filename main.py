@@ -1,11 +1,8 @@
-
-
 import tkinter as tk
 from tkinter.constants import OFF
 from default_map import show_default_map
 
 from renderer import Renderer, piece_size,offset
-
 
 from piece_generator import DirectPieceGenerator, StorePieceGenerator
 

@@ -1,3 +1,4 @@
+#class Point(x,y), class Size(width, height)
 
 class Point:
     def __init__(self, x, y):

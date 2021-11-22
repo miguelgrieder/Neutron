@@ -1,8 +1,9 @@
-
 import unittest
 
 from coordinates import Point
   
+#class PointTest[unittest.TestCase]
+
 class PointTest(unittest.TestCase):
   
     def test_init(self):        
