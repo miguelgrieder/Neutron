@@ -6,6 +6,8 @@ from renderer import Renderer, piece_size,offset
 
 from piece_generator import DirectPieceGenerator, StorePieceGenerator
 
+#def main
+
 def main():
 
     width = 640
@@ -16,6 +18,7 @@ def main():
     ws.title('Mahjong')
     ws.geometry(f'{width}x{height}')
     ws.config(bg=bg)
+
 
     canvas = tk.Canvas(
         ws,
@@ -65,6 +68,15 @@ def main():
 
 
     canvas.bind("<Button-1>", on_click)
+
+    mostrar_dica = tk.Button(ws,text="Mostrar dica")
+    mostrar_dica.place(x=10,y=600,width=100,height=20)
+
+    recomecar = tk.Button(ws,text="Recomeçar")
+    recomecar.place(x=510,y=600,width=100,height=20)
+
+    placar = tk.Label(ws,bg = '#6e7482', fg='#ffffff',text="Tempo: 24 seg.")
+    placar.place(x=220,y=600,width=200,height=20)
 
     ws.mainloop()
 

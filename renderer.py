@@ -1,4 +1,3 @@
-
 from tkinter.constants import NONE
 from coordinates import Point, Size
 
