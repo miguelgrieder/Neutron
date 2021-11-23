@@ -8,7 +8,7 @@ def show_default_map(generator):
     layer4(generator)
     after_extras(generator)
 
-
+# Funcoes que definem cada camada de pecas
 def layer1(generator):
 
     generator.reset()

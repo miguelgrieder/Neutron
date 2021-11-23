@@ -34,7 +34,7 @@ class DirectPieceGenerator:
         self.current_row = 0
         self.current_col = 0
 
-class Position:
+class Position: # Uma peca do tabuleiro
     is_focused = False
     def __init__(self, row, col, floor):
         self.row = row
@@ -42,7 +42,7 @@ class Position:
         self.floor = floor
 
 class StorePieceGenerator:
-    pieces = []
+    pieces = [] #Lista de posicoes de pecas
     current_row = 0
     current_col = 0
     current_floor = 0
@@ -52,7 +52,7 @@ class StorePieceGenerator:
 
     def fill_piece(self, columns, offset_x=0, offset_y=0):
 
-        for i in reversed(range(columns)):
+        for i in reversed(range(columns)): # Ira criar todas pecas em loop
             self.pieces.append(
                 Position(
                     self.current_row + offset_y,
