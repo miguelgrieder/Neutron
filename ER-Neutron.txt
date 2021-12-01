@@ -1,0 +1,65 @@
+1 - Identificação do documento
+
+Identificação do projeto:
+
+Especificação de requisitos para Modelagem e implementação do jogo Neutron
+
+Identificador do documento:
+
+30/11/2021
+
+Versão:
+
+1.0
+
+Data:
+
+30/11/2021
+
+Histórico do documento: (tabela)
+
+  Versão Autores Data Ação
+
+1 Miguel 15/11/2021 especificação de requisitos
+
+Conteúdo:
+
+Especificacao
+
+2 - Introdução 
+
+Objetivo: 
+
+Planejar, modelar e desenvolver um jogo Neutron. A modelagem será seguindo os padrões da UML 2 e o desenvolvimento será na linguagem Python. O jogo exectará localmente, com dois jogadores humanos competindo. 
+
+Referências:
+
+[https://www.youtube.com/watch?v=6sWilpyOWgc](https://www.youtube.com/watch?v=6sWilpyOWgc)
+
+3 - Visão geral do sistema
+
+Arquitetura do software:
+
+Sandalone. 
+
+Premissas do desenvolvimeto:
+
+Implementado em Python, modelagem seguindo UML2 
+
+A modelagem deve ser produzida no Visual Paradign
+
+Utilizado a biblioteca tkinter para interface.
+
+4 - Requisitos da aplicação
+
+Requisiteos funcionais
+
+RF_modo_de_jogo
+
+O jogo será em multijogador por turnos. Irá ter um campo de mensagem avisando a vez de qual jogador e quando algum jogador vencer.
+
+Requisitos não funcionais
+
+RNF01
+
+Verdionamento para código e modelagem utilizando apenas o GitHub
