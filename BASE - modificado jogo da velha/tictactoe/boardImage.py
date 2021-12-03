@@ -1,4 +1,5 @@
 class BoardImage:
+	#Realiza a comunicacao entra board(back) e actorplayer(front) para a exibicao
 	def __init__(self):
 		super().__init__()
 		self.message=""

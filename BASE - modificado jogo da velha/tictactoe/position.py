@@ -1,4 +1,5 @@
 class Position:
+	#Representa uma posicao do tabuleiro
 	def __init__(self):
 		self.occupant = None
 	 

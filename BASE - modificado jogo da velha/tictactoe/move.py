@@ -1,4 +1,5 @@
 class Move:
+    #Representa uma jogada, com as posicoes do tabuleiro dela
     def __init__(self, argLine, argColumn):
         self.line = argLine
         self.column = argColumn

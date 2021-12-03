@@ -2,6 +2,7 @@ import player
 import move
 
 class HumanPlayer(player.Player):
+	#Jogador humano, metodos principais herdados
 	def __init__(self):
 		super().__init__()
 
