@@ -31,14 +31,16 @@ class Board:
         for y in range(5):
             column = []
             for x in range(5):
-                if y == 0:                
-                    column.append(position.Position(self.player1))
-                elif y == 4:
-                    column.append(position.Position(self.player2))
-                else:
                     column.append(position.Position(None))
-                self.positions.append(column)
+            self.positions.append(column)
+
+        for i in range(5):
+            self.positions[i][0] = position.Position(self.player1)
+        for i in range(5):
+            self.positions[i][4] = position.Position(self.player2)
+
         self.positions[2][2] = position.Position(neutron.Neutron())
+
 
     def getStatus(self):
         #Retorna o estado do jogo
@@ -81,40 +83,30 @@ class Board:
         else: 
             return self.player1
 
-    def setMessage(self, text):
-        self.message = text
-
-    def getMessage(self):
-        return self.message
-
-    
 
     def getState(self):
 
         # Retorna a mensagem do estado
-        if (self.getStatus() == 1): 
-            self.setMessage("Clique em qualquer posição para iniciar")
-        elif (self.getStatus() == 2):
-            self.setMessage((self.getEnabledPlayer()).getName() + " deve selecionar uma peça")    
-        elif (self.getStatus() == 3): 
-            self.setMessage("Local vazio - jogue novamente")
-        elif (self.getStatus() == 6): 
-            self.setMessage((self.getEnabledPlayer()).getName() + " deve selecionar para onde mover")
-        elif (self.getStatus() == 5): 
-            self.setMessage("A partida terminou empatada")
-        elif (self.getStatus() == 4): 
-            self.setMessage("A peça clicada é do oponente!")
+        status = self.getStatus()
+        jogador = (self.getEnabledPlayer().getName())
+        if (status == 1): 
+            self.message = "Clique em qualquer posição para iniciar"
+        elif (status == 2):
+            self.message = (jogador + " deve selecionar uma peça")    
+        elif (status == 3): 
+            self.message = ("Local vazio. Jogue novamente" + jogador)
+        elif (status == 4): 
+            self.message = ("A peça clicada é do oponente! Jogue novamente" + jogador)
+        elif (status == 5): 
+            self.message = (jogador + " deve selecionar para onde mover")
 
-        return self.getMessage()
+        return self.message
 
-    def getValue(self):
-        for x in range(5):
-            for y in range(5):
-                if (self.positions[x][y].occupied()):
-                    value = (self.positions[x][y].getOccupant()).getSymbol()        
-                else:
-                    value = 0
-        print(value)
+    def getValue(self, x, y):  
+        if (self.positions[x][y].occupied()):    
+            value = (self.positions[x][y].getOccupant()).getSymbol()        
+        else:
+            value = 0   
         return value
 
 
@@ -123,18 +115,19 @@ class Board:
     def proceedMove(self, aMove):
         #Realiza a jogada, e testa qual condica
         selectedPosition = self.getPosition(aMove)
+        enabledPlayer = self.getEnabledPlayer()
+        disabledPlayer = self.getDisabledPlayer()
+
         if selectedPosition.occupied():
             print('Clique em local vazio!')
             self.setStatus(3)    #Local vazio
-        if True:
+        elif True:
             print('Clique em peça mesmo time')
-            enabledPlayer = self.getEnabledPlayer()
-            disabledPlayer = self.getDisabledPlayer()
+
             selectedPosition.setOccupant(enabledPlayer)
 
-            self.setStatus(6)
+            self.setStatus(5)
             #selecionar para onde mover
-            newState = self.getState()
             enabledPlayer.disable()
             newMove = disabledPlayer.enable()
             if (newMove.getLine()!=0):
@@ -163,12 +156,6 @@ class Board:
         if (self.getStatus()==1):
             self.startMatch()
         else:
-            if (self.getStatus()==2 or self.getStatus()==3):
-                aMove = move.Move(line, column)
-                self.proceedMove(aMove)
-            else:
-                if (self.getStatus()==4 or self.getStatus()==5):
-                    self.reset()
-        
-#-----------------------------------------------------------------------------------------------------------------------------------
+            aMove = move.Move(line, column)
+            self.proceedMove(aMove)
                 
