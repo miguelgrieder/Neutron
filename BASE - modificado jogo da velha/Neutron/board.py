@@ -17,6 +17,7 @@ class Board:
     def __init__(self):
         #Define os jogadores
         super().__init__()
+        self.neutron = neutron.Neutron()
         self.player1=humanPlayer.HumanPlayer()
         self.player2=humanPlayer.HumanPlayer()
         self.player1.initialize("Jogador Vermelho", 1)
@@ -39,7 +40,7 @@ class Board:
         for i in range(5):
             self.positions[i][4] = position.Position(self.player2)
 
-        self.positions[2][2] = position.Position(neutron.Neutron())
+        self.positions[2][2] = position.Position(self.neutron)
 
 
     def getStatus(self):
@@ -84,7 +85,7 @@ class Board:
             return self.player1
 
 
-    def getState(self):
+    def getMessage(self):
 
         # Retorna a mensagem do estado
         status = self.getStatus()
@@ -92,13 +93,15 @@ class Board:
         if (status == 1): 
             self.message = "Clique em qualquer posição para iniciar"
         elif (status == 2):
-            self.message = (jogador + " deve selecionar uma peça")    
+            self.message = (jogador + " deve selecionar uma peça")
         elif (status == 3): 
-            self.message = ("Local vazio. Jogue novamente" + jogador)
+            self.message = (jogador + " deve selecionar para onde mover") 
         elif (status == 4): 
             self.message = ("A peça clicada é do oponente! Jogue novamente" + jogador)
         elif (status == 5): 
-            self.message = (jogador + " deve selecionar para onde mover")
+            self.message = ("Local vazio. Jogue novamente" + jogador)
+        
+        
 
         return self.message
 
@@ -117,27 +120,35 @@ class Board:
         selectedPosition = self.getPosition(aMove)
         enabledPlayer = self.getEnabledPlayer()
         disabledPlayer = self.getDisabledPlayer()
-
-        if selectedPosition.occupied():
+        status = self.getStatus()
+        if not selectedPosition.occupied() and status != 3:
             print('Clique em local vazio!')
-            self.setStatus(3)    #Local vazio
-        elif True:
+            self.setStatus(5)    #Local vazio
+
+        elif selectedPosition.getOccupant() == enabledPlayer:
             print('Clique em peça mesmo time')
-
-            selectedPosition.setOccupant(enabledPlayer)
-
-            self.setStatus(5)
+            
+            if status == 3:   
+                selectedPosition.setOccupant(enabledPlayer)
+                enabledPlayer.disable()
+                newMove = disabledPlayer.enable()
+                if (newMove.getLine()!=0):
+                    self.proceedMove(newMove)
+            if status == 2:
+                self.setStatus(3)
+            
             #selecionar para onde mover
-            enabledPlayer.disable()
-            newMove = disabledPlayer.enable()
-            if (newMove.getLine()!=0):
-                self.proceedMove(newMove)
+            
+
+        elif selectedPosition.getOccupant() == self.neutron:
+            print('Neutron!')
         else:
             print('Clique em peça do oponente!')
             self.setStatus(6)    #Local ocupado pelo oponente
 
         #Jogada regular, testar resultado
             
+
 
 
 

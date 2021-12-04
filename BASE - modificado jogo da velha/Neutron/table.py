@@ -66,7 +66,7 @@ class Table:
 
     def updateUserInterface(self):
         #Atualiza o tabuleiro apos uma jogada
-        self.labelMessage['text']=self.myBoard.getState()
+        self.labelMessage['text']=self.myBoard.getMessage()
         for y in range(5):    #    inverted
             for x in range(5):    #    inverted
                 label = self.matrix[x][y]
