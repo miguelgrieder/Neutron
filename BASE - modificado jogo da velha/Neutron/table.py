@@ -16,12 +16,13 @@ class Table:
 
         self.mainWindow.title("Neutron")
         self.mainWindow.iconbitmap("images/icon.ico")
-        self.mainWindow.geometry("575x615")
+        self.mainWindow.geometry("575x650")
         self.mainWindow.resizable(False, False)
         self.mainWindow["bg"]="black"
 
         self.mainFrame = Frame(self.mainWindow, padx=32, pady=25, bg="black")
         self.messageFrame = Frame(self.mainWindow, padx=4, pady=1, bg="black")
+        self.statusFrame = Frame(self.mainWindow, padx=4, pady=1, bg="black")
 
         self.empty = PhotoImage(file="images/empty.gif")        #pyimage0
         self.red = PhotoImage(file="images/red.gif")            #pyimage1
@@ -54,10 +55,13 @@ class Table:
 
     def labels(self):
         #Adiciona os textos informativos na interface
-        self.labelMessage = Label(self.messageFrame, bg="black",fg="white", text='Clique no tabuleiro para iniciar')
+        self.labelMessage = Label(self.messageFrame, bg="black",fg="white", text='')
+        self.labelStatus = Label(self.statusFrame, bg="black",fg="white", text='Clique no tabuleiro para iniciar')
         self.labelMessage.grid(row=0, column=0, columnspan=3)
+        self.labelStatus.grid(row=0, column=0, columnspan=3)
         self.mainFrame.grid(row=0 , column=0)
-        self.messageFrame.grid(row=1 , column=0) 
+        self.messageFrame.grid(row=3 , column=0) 
+        self.statusFrame.grid(row=1 , column=0)
 
     def click(self, event, line, column):
         #envento ao clicar em uma posicao
@@ -67,6 +71,7 @@ class Table:
     def updateUserInterface(self):
         #Atualiza o tabuleiro apos uma jogada
         self.labelMessage['text']=self.myBoard.getMessage()
+        self.labelStatus['text']=self.myBoard.getStatusMessage()
         for y in range(5):    #    inverted
             for x in range(5):    #    inverted
                 label = self.matrix[x][y]
