@@ -1,7 +1,8 @@
 class Position:
 	#Representa uma posicao do tabuleiro
-	def __init__(self):
+	def __init__(self, player):
 		self.occupant = None
+		self.setOccupant(player)
 	 
 	def occupied(self):
 		return (self.occupant != None)

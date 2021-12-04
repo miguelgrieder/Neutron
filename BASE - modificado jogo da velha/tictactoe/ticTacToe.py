@@ -1,3 +1,0 @@
-import actorPlayer
-
-actorPlayer.ActorPlayer()

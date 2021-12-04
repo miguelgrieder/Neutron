@@ -27,8 +27,18 @@ class Board:
 		for y in range(5):
 			column = []
 			for x in range(5):
-				column.append(position.Position())
-			self.positions.append(column)
+				if y == 0:				
+					print('red1')
+					column.append(position.Position(self.player1))
+				elif y == 4:
+					print('white1')
+					column.append(position.Position(self.player2))
+				else:
+					column.append(position.Position(None))
+				self.positions.append(column)
+        
+
+	
 
 	def getStatus(self):
 		#Retorna o estado do jogo
@@ -47,24 +57,8 @@ class Board:
 		self.player2.reset()
 		self.setStatus(1)
 
-	def evaluateFull(self):
-		#Testa se o tabuleiro esta cheio, apos checar se tenha vencidor( entao jogo empatado)
-		full = True
-		for x in range(5):
-			for y in range(5):
-				if (not self.positions[x][y].occupied()):
-					full = False
-		return full
 	
-	def getWinner(self):
-		#Retorna o vencedor, caso seja
-		if (self.player1.getWinner()):
-			return self.player1
-		else:
-			if (self.player2.getWinner()):
-				return self.player2
-			else:
-				return None			
+		
 	
 	def getPosition(self, aMove):
 		#Retorna o estado da posicao indicada 
@@ -86,20 +80,26 @@ class Board:
 		else: 
 			return self.player1
 
+	def setMessage(self, text):
+		self.message = text
+
+	def getMessage(self):
+		return self.message
 
 	def getState(self):
 		state = boardImage.BoardImage()
 		# Retorna a mensagem do estado
 		if (self.getStatus() == 1): 
-			state.setMessage("Clique em qualquer posição para iniciar")
+			self.setMessage("Clique em qualquer posição para iniciar")
 		elif (self.getStatus() == 2):
-			state.setMessage((self.getEnabledPlayer()).getName() + " deve jogar")	
+			self.setMessage((self.getEnabledPlayer()).getName() + " deve selecionar uma peça")	
 		elif (self.getStatus() == 3): 
-			state.setMessage("jogada irregular - jogue novamente")
-		elif (self.getStatus() == 4): 
-			state.setMessage((self.getWinner()).getName() + " venceu a partida")
+			self.setMessage("Local vazio - jogue novamente")
+		elif (self.getStatus() == 6): 
+			self.setMessage((self.getEnabledPlayer()).getName() + " deve selecionar para onde mover")
 		elif (self.getStatus() == 5): 
-			state.setMessage("A partida terminou empatada")
+			self.setMessage("A partida terminou empatada")
+        
 		# obtaining board filling	
 		for x in range(5):
 			for y in range(5):
@@ -109,31 +109,39 @@ class Board:
 				else:
 					value = 0
 					state.setValue((x+1), (y+1), value)
+
 		return state
 
 	def proceedMove(self, aMove):
 		#Realiza a jogada, e testa qual condica
 		selectedPosition = self.getPosition(aMove)
+		print(selectedPosition.getOccupant())
+
 		if selectedPosition.occupied():
-			self.setStatus(3)	#Local ocupado - irregular
-		else:
-			#Jogada regular, testar resultado
+			print('vazio!')
+			self.setStatus(3)	#Local vazio
+		if selectedPosition.getOccupant() == self.getEnabledPlayer():
+			print('kkk')
+			print('CLICOU EM POSICAO CERTA - MESMO TIME')
 			enabledPlayer = self.getEnabledPlayer()
 			disabledPlayer = self.getDisabledPlayer()
 			selectedPosition.setOccupant(enabledPlayer)
 
-			if enabledPlayer.getWinner():	#	Caso vença
-				self.setStatus(4)
-			else:
-				if self.evaluateFull():		#	Caso empate
-					self.setStatus(5)
-				else:						#	Caso continue o jogo
-					self.setStatus(2)
-					newState = self.getState()
-					enabledPlayer.disable()
-					newMove = disabledPlayer.enable(newState)
-					if (newMove.getLine()!=0):
-						self.proceedMove(newMove)
+			self.setStatus(6)
+            #selecionar para onde mover
+			newState = self.getState()
+			enabledPlayer.disable()
+			newMove = disabledPlayer.enable(newState)
+			if (newMove.getLine()!=0):
+				self.proceedMove(newMove)
+		else:
+			print('local do oponente!')
+			self.setStatus(6)	#Local ocupado pelo oponente
+
+		#Jogada regular, testar resultado
+			
+
+
 
 	def startMatch(self):
 		# Comeca uma nova partida
@@ -159,4 +167,4 @@ class Board:
 					self.reset()
 		
 #-----------------------------------------------------------------------------------------------------------------------------------
-					
+				
