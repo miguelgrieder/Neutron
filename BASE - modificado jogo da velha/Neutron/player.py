@@ -4,7 +4,6 @@ class Player():
     def __init__(self):
         self.symbol = None    #int
         self.turn = False    #boll
-        self.winner = False    #boll
         self.name = ''    #string
 
     #@abstractmethod
@@ -18,8 +17,8 @@ class Player():
         self.winner = False        #bool
 
     def reset(self):
-        self.turn = False        #bool
-        self.winner = False        #bool
+        self.turn = False		
+
 
     def disable(self):
         self.turn = False
@@ -30,11 +29,6 @@ class Player():
     def getName(self):
         return self.name
     
-    def getWinner(self):
-        return self.winner
-     
-    def setWinner(self):
-        self.winner = True
      
     def getTurn(self):
         return self.turn

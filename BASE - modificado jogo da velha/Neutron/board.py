@@ -64,18 +64,18 @@ class Board:
         self.player1.reset()
         self.player2.reset()
         self.initialPieces()
-        self.setStatus(1)
+
 
     def getStatusMessage(self):
         status = self.getStatus()
         jogador = (self.getEnabledPlayer().getName())
 
         if (status == 0): 
-            self.statusMessage = (jogador + " - Selecione uma peça sua para mover")
+            self.statusMessage = (jogador + " - Selecione uma peça sua para mover - status0")
         elif (status == 1):
-            self.statusMessage = (jogador + " - Selecione a posição para mover sua peça")
+            self.statusMessage = (jogador + " - Selecione a posição para mover sua peça - status1")
         elif (status == 2): 
-            self.statusMessage = (jogador + " - Selecione a posição para mover o Neutron")
+            self.statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status2")
         return self.statusMessage
         
     
@@ -108,10 +108,8 @@ class Board:
         jogador = (self.getEnabledPlayer().getName())
 
         if (message == 1): 
-            self.message = "Clique em qualquer posição para iniciar um novo jogo."
-        elif (message == 2):
-            self.message = ""#(jogador + " deve selecionar uma peça")
-        elif (message == 3): 
+            self.message = ""
+        elif (message == 2): 
             self.message = ("Local vazio. Selecione novamente")
 
 
@@ -154,52 +152,46 @@ class Board:
         enabledPlayer = self.getEnabledPlayer()
         disabledPlayer = self.getDisabledPlayer()
         status = self.getStatus()
-
         if status == -1:
-
             self.setStatus(0)
             self.setMessage(32)
+
         else:
             if not selectedPosition.occupied(): #CLIQUE EM LOCAL VAZIO 
                 if status == 0:# x + na  vez selecionar peça time 
-                    self.setMessage(3)
-                    print('Local vazio. Selecione uma peça do seu time!')
+                    self.setMessage(2)
                     
-                elif status == 1: # x + na  vez selecio nar para onde / certa
-                    print('Clique em local vazio! Peça do time movida!') 
-        
             
-                    self.setMessage(20)
-                    if (enabledPlayer.getLine()!=0):
-                        self.proceedMove(enabledPlayer)
-                    
-
-                elif status == 2: # x + para onde neutrom / certa
-                    print('moveu o neutron')
+                elif status == 2:  #move o neutron
                     enabledPlayer.disable()
                     newMove = disabledPlayer.enable()
+                    self.setStatus(0)
+                    self.setMessage(1)
                     if (newMove.getLine()!=0):
                         self.proceedMove(newMove)
-                    #move o neutron!!!!!!
+                   
+
+                elif status == 1: # Move a peca do time
+                    self.setStatus(2)
+                    self.setMessage(20)
                 
             elif selectedPosition.getOccupant() == enabledPlayer: #Clicou na peça do mesmo time
-                print('Clique em peça mesmo time')
                 
                 if status == 0: # X + selecionou peça certa
                     self.setMessage(10)
                     self.setStatus(1)
-                
+
                 else:  # X + devia ser para onde VAZIO
                     self.setMessage(11)
 
         
             elif selectedPosition.getOccupant() == self.neutron: #Clicou no Neutron
                 self.setMessage(31)
-                print('Neutron!')
+                
 
             else: #Sobra apenas clicar no oponente 
                 self.setMessage(30)
-                print('Clique em peça do oponente!')
+
                 
                 #Local ocupado pelo oponente
 
@@ -213,7 +205,6 @@ class Board:
     def startMatch(self):
         # Comeca uma nova partida
         self.reset()
-        self.setStatus(2)
         if random.randint(1,2)==1:
             self.player1.enable()
         else:
@@ -222,7 +213,7 @@ class Board:
 
     def click(self, line, column):
         # Realiza os processos ao jogador clicar em uma posicao
-        if (self.getStatus()==1):
+        if (self.getStatus()==-1):
             self.startMatch()
         else:
             aMove = move.Move(line, column)

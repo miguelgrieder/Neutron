@@ -48,11 +48,6 @@ class Table:
                 column.append(field)
             self.matrix.append(column)
             
-
-
-
-
-
     def labels(self):
         #Adiciona os textos informativos na interface
         self.labelMessage = Label(self.messageFrame, bg="black",fg="white", text='')
