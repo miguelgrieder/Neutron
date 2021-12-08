@@ -1,4 +1,4 @@
-class Position:
+class Field:
     #Representa uma posicao do tabuleiro
     def __init__(self, player):
         self.setOccupant(player)

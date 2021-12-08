@@ -1,4 +1,4 @@
-import position
+import field
 import player
 import humanPlayer
 import move
@@ -20,53 +20,43 @@ class Board:
         self.neutron = neutron.Neutron()
         self.player1=humanPlayer.HumanPlayer()
         self.player2=humanPlayer.HumanPlayer()
-        self.player1.initialize("Jogador Vermelho", 1)
-        self.player2.initialize("Jogador Branco", 2)
+        self.player1.initialize("Jogador Próton", 1)
+        self.player2.initialize("Jogador Elétron", 2)
         self.matchStatus = -1
         #Define as posicoes no "backend"
-        self.positions=[]
-        self.message = 0
+        self.fields=[]
+        self.message = 1
         self.initialPieces()
         
-        
     def initialPieces(self):
+        #Define as posicaos iniciais do tabuleiro
         for y in range(5):
             column = []
             for x in range(5):
-                    column.append(position.Position(None))
-            self.positions.append(column)
+                    column.append(field.Field(None))
+            self.fields.append(column)
 
         for i in range(5):
-            self.positions[i][0] = position.Position(self.player1)
+            self.fields[i][0] = field.Field(self.player1)
         for i in range(5):
-            self.positions[i][4] = position.Position(self.player2)
+            self.fields[i][4] = field.Field(self.player2)
 
-        self.positions[2][2] = position.Position(self.neutron)
-
+        self.fields[2][2] = field.Field(self.neutron)
 
     def getStatus(self):
         #Retorna o estado do jogo
         # -1 - antes de partida iniciar
-        # 0 - vez peca time
-        # 1 - vez local 
-        # 2 - vez neutron
+        # 0 - vez  de selecionar a peca do time
+        # 1 - vez de selecionar local vazio para onde mover a peca time
+        # 2 - vez de selecionar local vazio para onde mover o  neutron
         return self.matchStatus
 
     def setStatus(self, value):
         #Define o estado do jogo
         self.matchStatus = value
 
-    def reset(self):
-        #Reinicia o tabuleiro com todas posicoes vazias
-        for x in range(5):
-            for y in range(5):
-                self.positions[x][y].empty()
-        self.player1.reset()
-        self.player2.reset()
-        self.initialPieces()
-
-
     def getStatusMessage(self):
+        # Retorna a mensagem de estado
         status = self.getStatus()
         jogador = (self.getEnabledPlayer().getName())
 
@@ -76,14 +66,46 @@ class Board:
             self.statusMessage = (jogador + " - Selecione a posição para mover sua peça - status1")
         elif (status == 2): 
             self.statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status2")
+        else:
+            self.statusMessage = status
         return self.statusMessage
+
+    def setMessage(self, message):
+        self.message = message
+
+    def getMessage(self):
+        # Retorna a mensagem de advertencia
+        message = self.message
+        jogador = (self.getEnabledPlayer().getName())
+
+        if (message == 1): 
+            self.message = ""
+        elif (message == 2): 
+            self.message = ("Local vazio. Selecione novamente")
+
+        elif (message == 10): 
+            self.message = ""#(jogador + " deve selecionar para onde mover") 
+        elif (message == 11): 
+            self.message = ("Local incorreto. Jogue novamente")
+
+        elif (message == 20): 
+            self.message = ""#("Agora selecione para onde o neutron movera" + jogador)
+        
+        elif (message == 30): 
+            self.message = ("A peça clicada é do oponente! Jogue novamente")
+        elif (message == 31): 
+            self.message = ("A peça clicada é o Neutron! Jogue novamente")
+        elif (message == 32): 
+            self.message = ("")
+        
+        return self.message
         
     
-    def getPosition(self, aMove):
+    def getField(self, aMove):
         #Retorna o estado da posicao indicada 
         x = aMove.getLine() - 1
         y = aMove.getColumn() - 1
-        return self.positions[x][y]
+        return self.fields[x][y]
 
     def getEnabledPlayer(self):
         #Retorna o jogador da rodada
@@ -99,69 +121,30 @@ class Board:
         else: 
             return self.player1
 
-    def setMessage(self, message):
-        self.message = message
-
-    def getMessage(self):
-        # Retorna a mensagem do estado
-        message = self.message
-        jogador = (self.getEnabledPlayer().getName())
-
-        if (message == 1): 
-            self.message = ""
-        elif (message == 2): 
-            self.message = ("Local vazio. Selecione novamente")
-
-
-
-        elif (message == 10): 
-            self.message = ""#(jogador + " deve selecionar para onde mover") 
-        elif (message == 11): 
-            self.message = ("Local incorreto. Jogue novamente")
-
-
-        elif (message == 20): 
-            self.message = ""#("Agora selecione para onde o neutron movera" + jogador)
-
-        
-        elif (message == 30): 
-            self.message = ("A peça clicada é do oponente! Jogue novamente")
-        elif (message == 31): 
-            self.message = ("A peça clicada é o Neutron! Jogue novamente")
-        elif (message == 32): 
-            self.message = ("")
-        
-
-        return self.message
-
     def getValue(self, x, y):  
-        if (self.positions[x][y].occupied()):    
-            value = (self.positions[x][y].getOccupant()).getSymbol()        
+        #Retorna o tipo de peça de um campo
+        if (self.fields[x][y].occupied()):    
+            value = (self.fields[x][y].getOccupant()).getSymbol()        
         else:
             value = 0   
         return value
     
     
-    
-
-
-
     def proceedMove(self, aMove):
         #Realiza a jogada, e testa qual condica
-        selectedPosition = self.getPosition(aMove)
+        selectedField = self.getField(aMove)
         enabledPlayer = self.getEnabledPlayer()
         disabledPlayer = self.getDisabledPlayer()
         status = self.getStatus()
         if status == -1:
             self.setStatus(0)
-            self.setMessage(32)
+            self.setMessage(1)
 
         else:
-            if not selectedPosition.occupied(): #CLIQUE EM LOCAL VAZIO 
+            if not selectedField.occupied(): #CLIQUE EM LOCAL VAZIO 
                 if status == 0:# x + na  vez selecionar peça time 
                     self.setMessage(2)
                     
-            
                 elif status == 2:  #move o neutron
                     enabledPlayer.disable()
                     newMove = disabledPlayer.enable()
@@ -169,13 +152,12 @@ class Board:
                     self.setMessage(1)
                     if (newMove.getLine()!=0):
                         self.proceedMove(newMove)
-                   
 
                 elif status == 1: # Move a peca do time
                     self.setStatus(2)
                     self.setMessage(20)
                 
-            elif selectedPosition.getOccupant() == enabledPlayer: #Clicou na peça do mesmo time
+            elif selectedField.getOccupant() == enabledPlayer: #Clicou na peça do mesmo time
                 
                 if status == 0: # X + selecionou peça certa
                     self.setMessage(10)
@@ -185,28 +167,18 @@ class Board:
                     self.setMessage(11)
 
         
-            elif selectedPosition.getOccupant() == self.neutron: #Clicou no Neutron
+            elif selectedField.getOccupant() == self.neutron: #Clicou no Neutron
                 self.setMessage(31)
-                
-
             else: #Sobra apenas clicar no oponente 
                 self.setMessage(30)
-
-                
-                #Local ocupado pelo oponente
-
-
-            #Jogada regular, testar resultado
-            
-
-
 
 
     def startMatch(self):
         # Comeca uma nova partida
         self.reset()
         if random.randint(1,2)==1:
-            self.player1.enable()
+            aMove = self.player1.enable()
+            self.proceedMove(aMove)
         else:
             aMove = self.player2.enable()
             self.proceedMove(aMove)
@@ -218,4 +190,13 @@ class Board:
         else:
             aMove = move.Move(line, column)
             self.proceedMove(aMove)
+    
+    def reset(self):
+        #Reinicia o tabuleiro com todas posicoes vazias
+        for x in range(5):
+            for y in range(5):
+                self.fields[x][y].empty()
+        self.player1.reset()
+        self.player2.reset()
+        self.initialPieces()
                 

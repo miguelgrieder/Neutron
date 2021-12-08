@@ -25,16 +25,16 @@ class Table:
         self.statusFrame = Frame(self.mainWindow, padx=4, pady=1, bg="black")
 
         self.empty = PhotoImage(file="images/empty.gif")        #pyimage0
-        self.red = PhotoImage(file="images/red.gif")            #pyimage1
-        self.white = PhotoImage(file="images/white.gif")        #pyimage2
+        self.proton = PhotoImage(file="images/proton.gif")            #pyimage1
+        self.eletron = PhotoImage(file="images/eletron.gif")        #pyimage2
         self.neutron = PhotoImage(file="images/neutron.png")    #pyimage3
 
         #Itnera sobre matrix, composto por column sendo uma linha de posicoes
         
 
-        self.initialPositions()
+        self.initialFields()
 
-    def initialPositions(self):
+    def initialFields(self):
         #Colocar as peças no lugar inicial
 
         #Define o tabuleiro inteiro como empty
@@ -75,9 +75,9 @@ class Table:
                 if value==0:
                     label['imag'] = self.empty
                 elif value==1:
-                    label['imag'] = self.red
+                    label['imag'] = self.proton
                 elif value==2:
-                    label['imag'] = self.white
+                    label['imag'] = self.eletron
                 elif value==3:
                     label['imag'] = self.neutron
 
