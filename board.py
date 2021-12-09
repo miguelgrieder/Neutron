@@ -1,5 +1,4 @@
 import field
-import player
 import humanPlayer
 import move
 import random
@@ -26,8 +25,17 @@ class Board:
         #Define as posicoes no "backend"
         self.fields=[]
         self.message = 1
+        self.passedFirstMatch = False
         self.initialPieces()
         
+    def getPassedFirstMatch(self):
+        #Retorna bool caso ja passou a primeira jogada(onde nao controla neutron)
+        return self.passedFirstMatch 
+
+    def setFirstMatch(self, boolean):
+        #Define bool de primeira jogada
+        self.passedFirstMatch = boolean
+    
     def initialPieces(self):
         #Define as posicaos iniciais do tabuleiro
         for y in range(5):
@@ -78,18 +86,18 @@ class Board:
         message = self.message
         jogador = (self.getEnabledPlayer().getName())
 
-        if (message == 1): 
+        if (message == 1): #1+ - status -1 , o
             self.message = ""
         elif (message == 2): 
-            self.message = ("Local vazio. Selecione novamente")
+            self.message = ("Local vazio. Jogue novamente")
 
-        elif (message == 10): 
-            self.message = ""#(jogador + " deve selecionar para onde mover") 
+        elif (message == 10): #10+ - status 10
+            self.message = ""
         elif (message == 11): 
             self.message = ("Local incorreto. Jogue novamente")
 
-        elif (message == 20): 
-            self.message = ""#("Agora selecione para onde o neutron movera" + jogador)
+        elif (message == 20): #20+ - status 20
+            self.message = ""
         
         elif (message == 30): 
             self.message = ("A peça clicada é do oponente! Jogue novamente")
@@ -154,8 +162,18 @@ class Board:
                         self.proceedMove(newMove)
 
                 elif status == 1: # Move a peca do time
-                    self.setStatus(2)
-                    self.setMessage(20)
+                    if self.getPassedFirstMatch() == True: 
+                        self.setStatus(2)
+                        self.setMessage(20)
+                    else: #Primeira rodada - não tem status 2 (neutron) 
+                        self.setFirstMatch(True)
+                        enabledPlayer.disable()
+                        newMove = disabledPlayer.enable()
+                        self.setStatus(0)
+                        self.setMessage(1)
+                        if (newMove.getLine()!=0):
+                            self.proceedMove(newMove)
+
                 
             elif selectedField.getOccupant() == enabledPlayer: #Clicou na peça do mesmo time
                 
@@ -176,6 +194,7 @@ class Board:
     def startMatch(self):
         # Comeca uma nova partida
         self.reset()
+        self.setFirstMatch(False)
         if random.randint(1,2)==1:
             aMove = self.player1.enable()
             self.proceedMove(aMove)
