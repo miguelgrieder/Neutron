@@ -11,33 +11,38 @@ import neutron
 # 4 - Jogo finalizado com vencedor
 # 5 - Jogo finalizado empatado
 
-class Board:
-    #Realiza a gerencia real do tabuleiro "back-end"
+
+class Board:  # Realiza a gerencia real do tabuleiro "back-end"
+
     def __init__(self):
-        #Define os jogadores
+        # Define os jogadores
         super().__init__()
         self.neutron = neutron.Neutron()
-        self.player1=humanPlayer.HumanPlayer()
-        self.player2=humanPlayer.HumanPlayer()
+        self.player1 = humanPlayer.HumanPlayer()
+        self.player2 = humanPlayer.HumanPlayer()
         self.player1.initialize("Jogador Próton", 1)
         self.player2.initialize("Jogador Elétron", 2)
         self.matchStatus = -1
-        #Define as posicoes no "backend"
-        self.fields=[]
+
+        # Define as posicoes no "backend"
+
+        self.fields = [] #tabuleiro
+        self.neutronPosition = [2, 2]
+        self.aMovePiece = None
         self.message = 1
         self.passedFirstMatch = False
         self.initialPieces()
         
     def getPassedFirstMatch(self):
-        #Retorna bool caso ja passou a primeira jogada(onde nao controla neutron)
+        # Retorna bool caso ja passou a primeira jogada(onde nao controla neutron)
         return self.passedFirstMatch 
 
     def setFirstMatch(self, boolean):
-        #Define bool de primeira jogada
+        # Define bool de primeira jogada
         self.passedFirstMatch = boolean
     
     def initialPieces(self):
-        #Define as posicaos iniciais do tabuleiro
+        # Define as posicaos iniciais do tabuleiro
         for y in range(5):
             column = []
             for x in range(5):
@@ -136,6 +141,29 @@ class Board:
         else:
             value = 0   
         return value
+
+    def moveNeutron(self, aMove):
+        x = self.neutronPosition[0]
+        y = self.neutronPosition[1]
+        self.fields[x][y].empty()
+
+        x_final = aMove.getLine() - 1
+        y_final = aMove.getColumn() - 1
+        self.fields[x_final][y_final].setOccupant(self.neutron)
+        self.neutronPosition = [x_final, y_final]
+
+
+    def movePiece(self, aMoveDestiny, player):
+
+        x_start = self.aMovePiece.getLine() - 1
+        y_start = self.aMovePiece.getColumn() - 1
+        self.fields[x_start][y_start].empty()
+        self.aMovePiece = None
+
+        x_final = aMoveDestiny.getLine() - 1
+        y_final = aMoveDestiny.getColumn() - 1
+        self.fields[x_final][y_final].setOccupant(player)
+
     
     
     def proceedMove(self, aMove):
@@ -154,6 +182,7 @@ class Board:
                     self.setMessage(2)
                     
                 elif status == 2:  #move o neutron
+                    self.moveNeutron(aMove)
                     enabledPlayer.disable()
                     newMove = disabledPlayer.enable()
                     self.setStatus(0)
@@ -165,8 +194,10 @@ class Board:
                     if self.getPassedFirstMatch() == True: 
                         self.setStatus(2)
                         self.setMessage(20)
+                        self.movePiece(aMove, enabledPlayer)
                     else: #Primeira rodada - não tem status 2 (neutron) 
                         self.setFirstMatch(True)
+                        self.movePiece(aMove, enabledPlayer)
                         enabledPlayer.disable()
                         newMove = disabledPlayer.enable()
                         self.setStatus(0)
@@ -174,12 +205,14 @@ class Board:
                         if (newMove.getLine()!=0):
                             self.proceedMove(newMove)
 
+
                 
             elif selectedField.getOccupant() == enabledPlayer: #Clicou na peça do mesmo time
                 
                 if status == 0: # X + selecionou peça certa
                     self.setMessage(10)
                     self.setStatus(1)
+                    self.aMovePiece = aMove
 
                 else:  # X + devia ser para onde VAZIO
                     self.setMessage(11)

@@ -1,5 +1,6 @@
 import move
 
+
 class HumanPlayer():
     def __init__(self):
         self.symbol = None    #int
