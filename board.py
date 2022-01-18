@@ -4,6 +4,7 @@ import move
 import random
 import neutron
 
+
 #    Estados do jogo
 # 1 - Jogo nao iniciado
 # 2 - Proximo jogador
@@ -26,27 +27,27 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         # Define as posicoes no "backend"
 
-        self.fields = [] #tabuleiro
+        self.fields = []  # tabuleiro
         self.neutronPosition = [2, 2]
         self.aMovePiece = None
         self.message = 1
         self.passedFirstMatch = False
         self.initialPieces()
-        
+
     def getPassedFirstMatch(self):
         # Retorna bool caso ja passou a primeira jogada(onde nao controla neutron)
-        return self.passedFirstMatch 
+        return self.passedFirstMatch
 
     def setFirstMatch(self, boolean):
         # Define bool de primeira jogada
         self.passedFirstMatch = boolean
-    
+
     def initialPieces(self):
         # Define as posicaos iniciais do tabuleiro
         for y in range(5):
             column = []
             for x in range(5):
-                    column.append(field.Field(None))
+                column.append(field.Field(None))
             self.fields.append(column)
 
         for i in range(5):
@@ -57,7 +58,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         self.fields[2][2] = field.Field(self.neutron)
 
     def getStatus(self):
-        #Retorna o estado do jogo
+        # Retorna o estado do jogo
         # -1 - antes de partida iniciar
         # 0 - vez  de selecionar a peca do time
         # 1 - vez de selecionar local vazio para onde mover a peca time
@@ -65,7 +66,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         return self.matchStatus
 
     def setStatus(self, value):
-        #Define o estado do jogo
+        # Define o estado do jogo
         self.matchStatus = value
 
     def getStatusMessage(self):
@@ -73,11 +74,11 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         status = self.getStatus()
         jogador = (self.getEnabledPlayer().getName())
 
-        if (status == 0): 
+        if (status == 0):
             self.statusMessage = (jogador + " - Selecione uma peça sua para mover - status0")
         elif (status == 1):
             self.statusMessage = (jogador + " - Selecione a posição para mover sua peça - status1")
-        elif (status == 2): 
+        elif (status == 2):
             self.statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status2")
         else:
             self.statusMessage = status
@@ -91,55 +92,54 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         message = self.message
         jogador = (self.getEnabledPlayer().getName())
 
-        if (message == 1): #1+ - status -1 , o
+        if (message == 1):  # 1+ - status -1 , o
             self.message = ""
-        elif (message == 2): 
+        elif (message == 2):
             self.message = ("Local vazio. Jogue novamente")
 
-        elif (message == 10): #10+ - status 10
+        elif (message == 10):  # 10+ - status 10
             self.message = ""
-        elif (message == 11): 
+        elif (message == 11):
             self.message = ("Local incorreto. Jogue novamente")
 
-        elif (message == 20): #20+ - status 20
+        elif (message == 20):  # 20+ - status 20
             self.message = ""
-        
-        elif (message == 30): 
+
+        elif (message == 30):
             self.message = ("A peça clicada é do oponente! Jogue novamente")
-        elif (message == 31): 
+        elif (message == 31):
             self.message = ("A peça clicada é o Neutron! Jogue novamente")
-        elif (message == 32): 
+        elif (message == 32):
             self.message = ("")
-        
+
         return self.message
-        
-    
+
     def getField(self, aMove):
-        #Retorna o estado da posicao indicada 
+        # Retorna o estado da posicao indicada
         x = aMove.getLine() - 1
         y = aMove.getColumn() - 1
         return self.fields[x][y]
 
     def getEnabledPlayer(self):
-        #Retorna o jogador da rodada
+        # Retorna o jogador da rodada
         if self.player1.getTurn():
             return self.player1
-        else: 
+        else:
             return self.player2
 
     def getDisabledPlayer(self):
-        #Retorna o jogador da proxima rodada
+        # Retorna o jogador da proxima rodada
         if self.player1.getTurn():
             return self.player2
-        else: 
+        else:
             return self.player1
 
-    def getValue(self, x, y):  
-        #Retorna o tipo de peça de um campo
-        if (self.fields[x][y].occupied()):    
-            value = (self.fields[x][y].getOccupant()).getSymbol()        
+    def getValue(self, x, y):
+        # Retorna o tipo de peça de um campo
+        if (self.fields[x][y].occupied()):
+            value = (self.fields[x][y].getOccupant()).getSymbol()
         else:
-            value = 0   
+            value = 0
         return value
 
     def moveNeutron(self, aMove):
@@ -152,22 +152,144 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         self.fields[x_final][y_final].setOccupant(self.neutron)
         self.neutronPosition = [x_final, y_final]
 
-
     def movePiece(self, aMoveDestiny, player):
 
         x_start = self.aMovePiece.getLine() - 1
         y_start = self.aMovePiece.getColumn() - 1
-        self.fields[x_start][y_start].empty()
-        self.aMovePiece = None
 
         x_final = aMoveDestiny.getLine() - 1
         y_final = aMoveDestiny.getColumn() - 1
-        self.fields[x_final][y_final].setOccupant(player)
 
-    
-    
+        x_diference = x_final - x_start
+        y_diference = y_final - y_start
+        legit_diagonal = False
+
+        if abs(x_diference) == abs(y_diference):
+            legit_diagonal = True
+            can_move_more = True
+            on_limit = False
+            more_moves = 0
+            if x_diference > 0 and y_diference > 0:
+                for i in range(abs(x_diference)):  # Checa se o caminho esta livre
+                    if self.fields[x_start + i + 1][y_start + i + 1].occupied():
+                        legit_diagonal = False
+                        break
+
+                for j in range(1, 4, 1):
+                    try:
+                        if not self.fields[x_final + 1][y_final + 1].occupied():
+                            more_moves = j
+                        else:
+                            can_move_more = False
+                    except:
+                        can_move_more = False
+                    finally:
+                        if can_move_more:
+
+                            if x_final + 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if y_final + 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if not on_limit:
+                                x_final = x_final + 1
+                                y_final = y_final + 1
+
+            if x_diference > 0 and y_diference < 0:
+                for i in range(abs(x_diference)):  # Checa se o caminho esta livre
+                    if self.fields[x_start + i + 1][y_start - i - 1].occupied():
+                        legit_diagonal = False
+                        break
+
+                for j in range(1, 4, 1):
+                    try:
+                        if not self.fields[x_final + 1][y_final - 1].occupied():
+                            more_moves = j
+                        else:
+                            can_move_more = False
+                    except:
+                        can_move_more = False
+                    finally:
+                        if can_move_more:
+
+                            if x_final + 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if y_final - 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if not on_limit:
+                                x_final = x_final + 1
+                                y_final = y_final - 1
+
+            if x_diference < 0 and y_diference > 0:  # MAIN
+                for i in range(abs(x_diference)):  # Checa se o caminho esta livre
+                    if self.fields[x_start - i - 1][y_start + i + 1].occupied():
+                        legit_diagonal = False
+                        break
+
+                for j in range(1, 4, 1):
+                    try:
+                        if not self.fields[x_final - 1][y_final + 1].occupied():
+                            more_moves = j
+                        else:
+                            can_move_more = False
+                    except:
+                        can_move_more = False
+                    finally:
+                        if can_move_more:
+
+                            if x_final - 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if y_final + 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if not on_limit:
+                                x_final = x_final - 1
+                                y_final = y_final + 1
+
+            if x_diference < 0 and y_diference < 0:
+                for i in range(abs(x_diference)):  # Checa se o caminho esta livre
+                    if self.fields[x_start - i - 1][y_start - i - 1].occupied():
+                        legit_diagonal = False
+                        break
+
+                for j in range(1, 4, 1):
+                    try:
+                        if not self.fields[x_final - 1][y_final - 1].occupied():
+                            more_moves = j
+                        else:
+                            can_move_more = False
+                    except:
+                        can_move_more = False
+                    finally:
+                        if can_move_more:
+
+                            if x_final - 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if y_final - 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if not on_limit:
+                                x_final = x_final - 1
+                                y_final = y_final - 1
+
+        if legit_diagonal:
+            self.fields[x_start][y_start].empty()
+            self.aMovePiece = None
+            self.fields[x_final][y_final].setOccupant(player)
+            return True
+        else:
+            return False
+
+    def diagonalCheck(self, aMove):
+        pass
+
     def proceedMove(self, aMove):
-        #Realiza a jogada, e testa qual condica
+        # Realiza a jogada, e testa qual condica
         selectedField = self.getField(aMove)
         enabledPlayer = self.getEnabledPlayer()
         disabledPlayer = self.getDisabledPlayer()
@@ -177,39 +299,41 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             self.setMessage(1)
 
         else:
-            if not selectedField.occupied(): #CLIQUE EM LOCAL VAZIO 
-                if status == 0:# x + na  vez selecionar peça time 
+            if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
+                if status == 0:  # x + na  vez selecionar peça time
                     self.setMessage(2)
-                    
-                elif status == 2:  #move o neutron
+
+                elif status == 2:  # move o neutron
                     self.moveNeutron(aMove)
                     enabledPlayer.disable()
                     newMove = disabledPlayer.enable()
                     self.setStatus(0)
                     self.setMessage(1)
-                    if (newMove.getLine()!=0):
+                    if (newMove.getLine() != 0):
                         self.proceedMove(newMove)
 
-                elif status == 1: # Move a peca do time
-                    if self.getPassedFirstMatch() == True: 
-                        self.setStatus(2)
-                        self.setMessage(20)
-                        self.movePiece(aMove, enabledPlayer)
-                    else: #Primeira rodada - não tem status 2 (neutron) 
+                elif status == 1:  # Move a peca do time
+                    if self.getPassedFirstMatch() == True:
+                        couldMove = self.movePiece(aMove, enabledPlayer)
+                        if couldMove:
+                            self.setStatus(2)
+                            self.setMessage(20)
+                    else:  # Primeira rodada - não tem status 2 (neutron)
                         self.setFirstMatch(True)
-                        self.movePiece(aMove, enabledPlayer)
-                        enabledPlayer.disable()
-                        newMove = disabledPlayer.enable()
-                        self.setStatus(0)
-                        self.setMessage(1)
-                        if (newMove.getLine()!=0):
-                            self.proceedMove(newMove)
+                        couldMove = self.movePiece(aMove, enabledPlayer)
+                        if couldMove:
+                            enabledPlayer.disable()
+                            newMove = disabledPlayer.enable()
+                            self.setStatus(0)
+                            self.setMessage(1)
+                            if (newMove.getLine() != 0):
+                                self.proceedMove(newMove)
 
 
-                
-            elif selectedField.getOccupant() == enabledPlayer: #Clicou na peça do mesmo time
-                
-                if status == 0: # X + selecionou peça certa
+
+            elif selectedField.getOccupant() == enabledPlayer:  # Clicou na peça do mesmo time
+
+                if status == 0:  # X + selecionou peça certa
                     self.setMessage(10)
                     self.setStatus(1)
                     self.aMovePiece = aMove
@@ -217,18 +341,17 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                 else:  # X + devia ser para onde VAZIO
                     self.setMessage(11)
 
-        
-            elif selectedField.getOccupant() == self.neutron: #Clicou no Neutron
-                self.setMessage(31)
-            else: #Sobra apenas clicar no oponente 
-                self.setMessage(30)
 
+            elif selectedField.getOccupant() == self.neutron:  # Clicou no Neutron
+                self.setMessage(31)
+            else:  # Sobra apenas clicar no oponente
+                self.setMessage(30)
 
     def startMatch(self):
         # Comeca uma nova partida
         self.reset()
         self.setFirstMatch(False)
-        if random.randint(1,2)==1:
+        if random.randint(1, 2) == 1:
             aMove = self.player1.enable()
             self.proceedMove(aMove)
         else:
@@ -237,18 +360,18 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
     def click(self, line, column):
         # Realiza os processos ao jogador clicar em uma posicao
-        if (self.getStatus()==-1):
+        if (self.getStatus() == -1):
             self.startMatch()
         else:
             aMove = move.Move(line, column)
             self.proceedMove(aMove)
-    
+
     def reset(self):
-        #Reinicia o tabuleiro com todas posicoes vazias
+        # Reinicia o tabuleiro com todas posicoes vazias
         for x in range(5):
             for y in range(5):
                 self.fields[x][y].empty()
         self.player1.reset()
         self.player2.reset()
         self.initialPieces()
-                
+
