@@ -162,8 +162,32 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         x_diference = x_final - x_start
         y_diference = y_final - y_start
-        legit_diagonal = False
 
+
+        can_move_more, legit_diagonal, more_moves, x_diference, y_diference, x_start, x_final, y_start, y_final, on_limit = self.diagonalCheck(x_diference, y_diference, x_start, x_final, y_start, y_final)
+        if legit_diagonal:
+            can_move_more, legit_diagonal, more_moves, x_diference, y_diference, x_start, x_final, y_start, y_final, on_limit = self.moveMore(can_move_more, legit_diagonal, more_moves, x_diference, y_diference, x_start, x_final, y_start, y_final, on_limit)
+            legit_diagonal = self.moveResults(player, legit_diagonal, x_start, x_final,y_start, y_final)
+            return legit_diagonal
+        else:
+            return False
+
+
+        #dict_diagonalCheck = self.diagonalCheck(x_diference, y_diference, x_start, x_final, y_start, y_final)
+        #if dict_diagonalCheck['legit_diagonal']:
+         #   dict_moreMove = self.moveMore()
+         #   legit_diagonal = self.moveResults(**dict_moreMove.values())
+         #   return legit_diagonal
+        #else:
+        #    return False
+
+
+
+    def diagonalCheck(self, x_diference, y_diference, x_start, x_final,y_start, y_final):
+        legit_diagonal = False
+        on_limit = False
+        more_moves = 0
+        can_move_more = False
         if abs(x_diference) == abs(y_diference):
             legit_diagonal = True
             can_move_more = True
@@ -196,87 +220,11 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                                 x_final = x_final + 1
                                 y_final = y_final + 1
 
-            if x_diference > 0 and y_diference < 0:
-                for i in range(abs(x_diference)):  # Checa se o caminho esta livre
-                    if self.fields[x_start + i + 1][y_start - i - 1].occupied():
-                        legit_diagonal = False
-                        break
+        return can_move_more, legit_diagonal, more_moves, x_diference, y_diference, x_start, x_final,y_start, y_final, on_limit
+        #return {'can_move_more': can_move_more, 'legit_diagonal': legit_diagonal, 'more_moves': more_moves, 'x_diference': x_diference,'y_diference': y_diference,
+        #        'x_start': x_start, 'x_final': x_final,'y_start': y_start, 'y_final': y_final, 'on_limit': on_limit}
 
-                for j in range(1, 4, 1):
-                    try:
-                        if not self.fields[x_final + 1][y_final - 1].occupied():
-                            more_moves = j
-                        else:
-                            can_move_more = False
-                    except:
-                        can_move_more = False
-                    finally:
-                        if can_move_more:
-
-                            if x_final + 1 not in [0, 1, 2, 3, 4]:
-                                on_limit = True
-                                break
-                            if y_final - 1 not in [0, 1, 2, 3, 4]:
-                                on_limit = True
-                                break
-                            if not on_limit:
-                                x_final = x_final + 1
-                                y_final = y_final - 1
-
-            if x_diference < 0 and y_diference > 0:  # MAIN
-                for i in range(abs(x_diference)):  # Checa se o caminho esta livre
-                    if self.fields[x_start - i - 1][y_start + i + 1].occupied():
-                        legit_diagonal = False
-                        break
-
-                for j in range(1, 4, 1):
-                    try:
-                        if not self.fields[x_final - 1][y_final + 1].occupied():
-                            more_moves = j
-                        else:
-                            can_move_more = False
-                    except:
-                        can_move_more = False
-                    finally:
-                        if can_move_more:
-
-                            if x_final - 1 not in [0, 1, 2, 3, 4]:
-                                on_limit = True
-                                break
-                            if y_final + 1 not in [0, 1, 2, 3, 4]:
-                                on_limit = True
-                                break
-                            if not on_limit:
-                                x_final = x_final - 1
-                                y_final = y_final + 1
-
-            if x_diference < 0 and y_diference < 0:
-                for i in range(abs(x_diference)):  # Checa se o caminho esta livre
-                    if self.fields[x_start - i - 1][y_start - i - 1].occupied():
-                        legit_diagonal = False
-                        break
-
-                for j in range(1, 4, 1):
-                    try:
-                        if not self.fields[x_final - 1][y_final - 1].occupied():
-                            more_moves = j
-                        else:
-                            can_move_more = False
-                    except:
-                        can_move_more = False
-                    finally:
-                        if can_move_more:
-
-                            if x_final - 1 not in [0, 1, 2, 3, 4]:
-                                on_limit = True
-                                break
-                            if y_final - 1 not in [0, 1, 2, 3, 4]:
-                                on_limit = True
-                                break
-                            if not on_limit:
-                                x_final = x_final - 1
-                                y_final = y_final - 1
-
+    def moveResults(self,player, legit_diagonal, x_start, x_final,y_start, y_final):
         if legit_diagonal:
             self.fields[x_start][y_start].empty()
             self.aMovePiece = None
@@ -285,8 +233,90 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         else:
             return False
 
-    def diagonalCheck(self, aMove):
-        pass
+    def moveMore(self, can_move_more, legit_diagonal, more_moves, x_diference, y_diference, x_start, x_final,y_start, y_final, on_limit): #can_move_more, legit_diagonal, more_moves, x_diference, y_diference, x_start, x_final,y_start, y_final, on_limit
+        if x_diference > 0 > y_diference:
+            for i in range(abs(x_diference)):  # Checa se o caminho esta livre
+                if self.fields[x_start + i + 1][y_start - i - 1].occupied():
+                    legit_diagonal = False
+                    break
+
+            for j in range(1, 4, 1):
+                try:
+                    if not self.fields[x_final + 1][y_final - 1].occupied():
+                        more_moves = j
+                    else:
+                        can_move_more = False
+                except:
+                    can_move_more = False
+                finally:
+                    if can_move_more:
+
+                        if x_final + 1 not in [0, 1, 2, 3, 4]:
+                            on_limit = True
+                            break
+                        if y_final - 1 not in [0, 1, 2, 3, 4]:
+                            on_limit = True
+                            break
+                        if not on_limit:
+                            x_final = x_final + 1
+                            y_final = y_final - 1
+
+        if x_diference < 0 and y_diference > 0:  # MAIN
+            for i in range(abs(x_diference)):  # Checa se o caminho esta livre
+                if self.fields[x_start - i - 1][y_start + i + 1].occupied():
+                    legit_diagonal = False
+                    break
+
+            for j in range(1, 4, 1):
+                try:
+                    if not self.fields[x_final - 1][y_final + 1].occupied():
+                        more_moves = j
+                    else:
+                        can_move_more = False
+                except:
+                    can_move_more = False
+                finally:
+                    if can_move_more:
+
+                        if x_final - 1 not in [0, 1, 2, 3, 4]:
+                            on_limit = True
+                            break
+                        if y_final + 1 not in [0, 1, 2, 3, 4]:
+                            on_limit = True
+                            break
+                        if not on_limit:
+                            x_final = x_final - 1
+                            y_final = y_final + 1
+
+        if x_diference < 0 and y_diference < 0:
+            for i in range(abs(x_diference)):  # Checa se o caminho esta livre
+                if self.fields[x_start - i - 1][y_start - i - 1].occupied():
+                    legit_diagonal = False
+                    break
+
+            for j in range(1, 4, 1):
+                try:
+                    if not self.fields[x_final - 1][y_final - 1].occupied():
+                        more_moves = j
+                    else:
+                        can_move_more = False
+                except:
+                    can_move_more = False
+                finally:
+                    if can_move_more:
+
+                        if x_final - 1 not in [0, 1, 2, 3, 4]:
+                            on_limit = True
+                            break
+                        if y_final - 1 not in [0, 1, 2, 3, 4]:
+                            on_limit = True
+                            break
+                        if not on_limit:
+                            x_final = x_final - 1
+                            y_final = y_final - 1
+        return can_move_more, legit_diagonal, more_moves, x_diference, y_diference, x_start, x_final, y_start, y_final, on_limit
+        #return {'legit_diagonal': legit_diagonal, 'more_moves': more_moves, 'x_diference': x_diference, 'y_diference': y_diference,
+        #        'x_start': x_start, 'x_final': x_final, 'y_start': y_start, 'y_final': y_final, 'on_limit': on_limit}
 
     def proceedMove(self, aMove):
         # Realiza a jogada, e testa qual condica
@@ -309,11 +339,11 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                     newMove = disabledPlayer.enable()
                     self.setStatus(0)
                     self.setMessage(1)
-                    if (newMove.getLine() != 0):
+                    if newMove.getLine() != 0:
                         self.proceedMove(newMove)
 
                 elif status == 1:  # Move a peca do time
-                    if self.getPassedFirstMatch() == True:
+                    if self.getPassedFirstMatch():
                         couldMove = self.movePiece(aMove, enabledPlayer)
                         if couldMove:
                             self.setStatus(2)
@@ -360,7 +390,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
     def click(self, line, column):
         # Realiza os processos ao jogador clicar em uma posicao
-        if (self.getStatus() == -1):
+        if self.getStatus() == -1:
             self.startMatch()
         else:
             aMove = move.Move(line, column)
