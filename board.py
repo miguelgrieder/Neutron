@@ -364,9 +364,9 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                             self.setStatus(2)
                             self.setMessage(20)
                     else:  # Primeira rodada - não tem status 2 (neutron)
-                        self.setFirstMatch(True)
                         couldMove = self.movePiece(aMove, enabledPlayer)
                         if couldMove:
+                            self.setFirstMatch(True)
                             enabledPlayer.disable()
                             newMove = disabledPlayer.enable()
                             self.setStatus(0)
