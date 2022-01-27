@@ -157,25 +157,25 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             can_move_more = True
 
             for i in range(abs(y_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start + 1][y_start + i + 1].occupied():
+                if self.fields[x_start][y_start + i + 1].occupied():
                     legit_linear = False
                     break
 
-                if legit_linear:
-                    for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
-                        try:
-                            if  self.fields[x_final][y_final + 1].occupied():
-                                can_move_more = False
-                        except:
+            if legit_linear:
+                for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
+                    try:
+                        if  self.fields[x_final][y_final + 1].occupied():
                             can_move_more = False
-                        finally:
-                            if can_move_more:
+                    except:
+                        can_move_more = False
+                    finally:
+                        if can_move_more:
 
-                                if y_final + 1 not in [0, 1, 2, 3, 4]:
-                                    on_limit = True
-                                    break
-                                if not on_limit:
-                                    y_final = y_final + 1
+                            if y_final + 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if not on_limit:
+                                y_final = y_final + 1
 
         elif x_difference == 0 and y_difference < 0:
 
@@ -183,25 +183,25 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             can_move_more = True
 
             for i in range(abs(y_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start + 1][y_start - i + 1].occupied():
+                if self.fields[x_start][y_start - i - 1].occupied():
                     legit_linear = False
                     break
 
-                if legit_linear:
-                    for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
-                        try:
-                            if  self.fields[x_final][y_final - 1].occupied():
-                                can_move_more = False
-                        except:
+            if legit_linear:
+                for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
+                    try:
+                        if  self.fields[x_final][y_final - 1].occupied():
                             can_move_more = False
-                        finally:
-                            if can_move_more:
+                    except:
+                        can_move_more = False
+                    finally:
+                        if can_move_more:
 
-                                if y_final - 1 not in [0, 1, 2, 3, 4]:
-                                    on_limit = True
-                                    break
-                                if not on_limit:
-                                    y_final = y_final - 1
+                            if y_final - 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if not on_limit:
+                                y_final = y_final - 1
 
         elif y_difference == 0 and x_difference > 0:
 
@@ -209,25 +209,25 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             can_move_more = True
 
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start + 1 + i][y_start  + 1].occupied():
+                if self.fields[x_start + 1 + i][y_start].occupied():
                     legit_linear = False
                     break
 
-                if legit_linear:
-                    for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
-                        try:
-                            if  self.fields[x_final][y_final + 1].occupied():
-                                can_move_more = False
-                        except:
+            if legit_linear:
+                for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
+                    try:
+                        if  self.fields[x_final + 1][y_final].occupied():
                             can_move_more = False
-                        finally:
-                            if can_move_more:
+                    except:
+                        can_move_more = False
+                    finally:
+                        if can_move_more:
 
-                                if x_final + 1 not in [0, 1, 2, 3, 4]:
-                                    on_limit = True
-                                    break
-                                if not on_limit:
-                                    x_final = x_final + 1
+                            if x_final + 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if not on_limit:
+                                x_final = x_final + 1
 
         elif y_difference == 0 and x_difference < 0:
 
@@ -235,26 +235,26 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             can_move_more = True
 
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start + 1 - i][y_start + 1].occupied():
+                if self.fields[x_start - 1 - i][y_start].occupied():
                     legit_linear = False
                     break
 
-                if legit_linear:
-                    for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
-                        try:
-                            if  self.fields[x_final][y_final - 1].occupied():
-                                can_move_more = False
-                        except:
+            if legit_linear:
+                for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
+                    try:
+                        if  self.fields[x_final - 1][y_final].occupied():
                             can_move_more = False
-                        finally:
-                            if can_move_more:
+                    except:
+                        can_move_more = False
+                    finally:
+                        if can_move_more:
 
-                                if x_final - 1 not in [0, 1, 2, 3, 4]:
-                                    on_limit = True
-                                    break
-                                if not on_limit:
-                                    x_final = x_final - 1
-        return  legit_linear
+                            if x_final - 1 not in [0, 1, 2, 3, 4]:
+                                on_limit = True
+                                break
+                            if not on_limit:
+                                x_final = x_final - 1
+        return can_move_more, legit_linear, x_difference, y_difference, x_start, x_final, y_start, y_final, on_limit
 
 
     def movePiece(self, aMoveDestiny, player):
@@ -270,10 +270,11 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         x_difference = x_final - x_start
         y_difference = y_final - y_start
-        #if x_difference == 0 or y_difference ==0: #Checa se o movimento linear é valido
-        #    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        #    legit_linear = self.linearCheck(x_difference, y_difference, x_start, x_final, y_start, y_final)
-        #    self.moveResults(player, legit_linear, x_start, x_final, y_start, y_final)
+        if x_difference == 0 or y_difference ==0: #Checa se o movimento linear é valido
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+            can_move_more, legit_linear, x_difference, y_difference, x_start, x_final, y_start, y_final, on_limit = self.linearCheck(x_difference, y_difference, x_start, x_final, y_start, y_final)
+            self.moveResults(player, legit_linear, x_start, x_final, y_start, y_final)
+            return legit_linear
 
         if abs(x_difference) == abs(y_difference): #Checa se o movimento diagonal é valido
             can_move_more, legit_diagonal, x_difference, y_difference, x_start, x_final, y_start, y_final, on_limit = self.moveDiagonal( x_difference, y_difference, x_start, x_final,y_start, y_final)
