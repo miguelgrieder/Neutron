@@ -145,19 +145,40 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
     def moveNeutron(self, aMove):
         could_move = self.movePiece(aMove, None)
         return could_move
-       # x_start = self.neutronPosition[0]
-        #y_start = self.neutronPosition[1]
-        #self.fields[x][y].empty()
 
-       # x_final = aMove.getLine() - 1
-       # y_final = aMove.getColumn() - 1
+    def linearCheck(self, x_difference, y_difference, x_start, x_final, y_start, y_final):
+        legit_linear = False
+        on_limit = False
+        more_moves = 0
+        can_move_more = False
 
+        if x_difference == 0:
 
-        #self.fields[x_final][y_final].setOccupant(self.neutron)
-        #self.neutronPosition = [x_final, y_final]
+            legit_linear = True
+            can_move_more = True
 
+            for i in range(abs(y_difference)):  # Checa se o caminho esta livre
+                if self.fields[x_start + 1][y_start + i + 1].occupied():
+                    legit_linear = False
+                    break
 
+                if legit_linear:
+                    for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
+                        try:
+                            if not self.fields[x_final + 1][y_final + 1].occupied():
+                                more_moves = j
+                            else:
+                                can_move_more = False
+                        except:
+                            can_move_more = False
+                        finally:
+                            if can_move_more:
 
+                                if y_final + 1 not in [0, 1, 2, 3, 4]:
+                                    on_limit = True
+                                    break
+                                if not on_limit:
+                                    y_final = y_final + 1
 
     def movePiece(self, aMoveDestiny, player):
         if player:
@@ -173,81 +194,46 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         x_difference = x_final - x_start
         y_difference = y_final - y_start
 
-
-        can_move_more, legit_diagonal, more_moves, x_difference, y_difference, x_start, x_final, y_start, y_final, on_limit = self.diagonalCheck(x_difference, y_difference, x_start, x_final, y_start, y_final)
-        if legit_diagonal:
-            can_move_more, legit_diagonal, more_moves, x_difference, y_difference, x_start, x_final, y_start, y_final, on_limit = self.moveMore(can_move_more, legit_diagonal, more_moves, x_difference, y_difference, x_start, x_final, y_start, y_final, on_limit)
+        if abs(x_difference) == abs(y_difference): #Checa se é um movimento diagonal
+            can_move_more, legit_diagonal, more_moves, x_difference, y_difference, x_start, x_final, y_start, y_final, on_limit = self.moveDiagonal( x_difference, y_difference, x_start, x_final,y_start, y_final)
             legit_diagonal = self.moveResults(player, legit_diagonal, x_start, x_final,y_start, y_final)
             return legit_diagonal
         else:
             return False
 
 
-        #dict_diagonalCheck = self.diagonalCheck(x_difference, y_difference, x_start, x_final, y_start, y_final)
-        #if dict_diagonalCheck['legit_diagonal']:
-         #   dict_moreMove = self.moveMore()
-         #   legit_diagonal = self.moveResults(**dict_moreMove.values())
-         #   return legit_diagonal
-        #else:
-        #    return False
-
-
-
-    def diagonalCheck(self, x_difference, y_difference, x_start, x_final,y_start, y_final):
-        legit_diagonal = False
+    def moveDiagonal(self, x_difference, y_difference, x_start, x_final,y_start, y_final):
         on_limit = False
+        can_move_more = True
         more_moves = 0
-        can_move_more = False
-        if abs(x_difference) == abs(y_difference):
-            legit_diagonal = True
-            can_move_more = True
-            on_limit = False
-            more_moves = 0
-            if x_difference > 0 and y_difference > 0:
-                for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                    if self.fields[x_start + i + 1][y_start + i + 1].occupied():
-                        legit_diagonal = False
-                        break
+        legit_diagonal = True
+        if x_difference > 0 and y_difference > 0:
+            for i in range(abs(x_difference)):  # Checa se o caminho esta livre
+                if self.fields[x_start + i + 1][y_start + i + 1].occupied():
+                    legit_diagonal = False
+                    break
 
-                for j in range(1, 4, 1):
-                    try:
-                        if not self.fields[x_final + 1][y_final + 1].occupied():
-                            more_moves = j
-                        else:
-                            can_move_more = False
-                    except:
+            for j in range(1, 4, 1):
+                try:
+                    if not self.fields[x_final + 1][y_final + 1].occupied():
+                        more_moves = j
+                    else:
                         can_move_more = False
-                    finally:
-                        if can_move_more:
+                except:
+                    can_move_more = False
+                finally:
+                    if can_move_more:
 
-                            if x_final + 1 not in [0, 1, 2, 3, 4]:
-                                on_limit = True
-                                break
-                            if y_final + 1 not in [0, 1, 2, 3, 4]:
-                                on_limit = True
-                                break
-                            if not on_limit:
-                                x_final = x_final + 1
-                                y_final = y_final + 1
+                        if x_final + 1 not in [0, 1, 2, 3, 4]:
+                            on_limit = True
+                            break
+                        if y_final + 1 not in [0, 1, 2, 3, 4]:
+                            on_limit = True
+                            break
+                        if not on_limit:
+                            x_final = x_final + 1
+                            y_final = y_final + 1
 
-        return can_move_more, legit_diagonal, more_moves, x_difference, y_difference, x_start, x_final,y_start, y_final, on_limit
-        #return {'can_move_more': can_move_more, 'legit_diagonal': legit_diagonal, 'more_moves': more_moves, 'x_difference': x_difference,'y_difference': y_difference,
-        #        'x_start': x_start, 'x_final': x_final,'y_start': y_start, 'y_final': y_final, 'on_limit': on_limit}
-
-    def moveResults(self, player, legit_diagonal, x_start, x_final, y_start, y_final):
-        if player:
-            if legit_diagonal:
-                self.fields[x_start][y_start].empty()
-                self.aMovePiece = None
-                self.fields[x_final][y_final].setOccupant(player)
-        else:
-            if legit_diagonal:
-                self.fields[x_start][y_start].empty()
-                self.fields[x_final][y_final].setOccupant(self.neutron)
-                self.neutronPosition = [x_final, y_final]
-        return legit_diagonal
-
-    def moveMore(self, can_move_more, legit_diagonal, more_moves, x_difference, y_difference, x_start, x_final,y_start, y_final, on_limit): #can_move_more, legit_diagonal, more_moves, x_difference, y_difference, x_start, x_final,y_start, y_final, on_limit
         if x_difference > 0 > y_difference:
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
                 if self.fields[x_start + i + 1][y_start - i - 1].occupied():
@@ -329,8 +315,19 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                             x_final = x_final - 1
                             y_final = y_final - 1
         return can_move_more, legit_diagonal, more_moves, x_difference, y_difference, x_start, x_final, y_start, y_final, on_limit
-        #return {'legit_diagonal': legit_diagonal, 'more_moves': more_moves, 'x_difference': x_difference, 'y_difference': y_difference,
-        #        'x_start': x_start, 'x_final': x_final, 'y_start': y_start, 'y_final': y_final, 'on_limit': on_limit}
+
+    def moveResults(self, player, legit_diagonal, x_start, x_final, y_start, y_final):
+        if player:
+            if legit_diagonal:
+                self.fields[x_start][y_start].empty()
+                self.aMovePiece = None
+                self.fields[x_final][y_final].setOccupant(player)
+        else:
+            if legit_diagonal:
+                self.fields[x_start][y_start].empty()
+                self.fields[x_final][y_final].setOccupant(self.neutron)
+                self.neutronPosition = [x_final, y_final]
+        return legit_diagonal
 
     def proceedMove(self, aMove):
         # Realiza a jogada, e testa qual condica
