@@ -18,29 +18,30 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
     def __init__(self):
         # Define os jogadores
         super().__init__()
-        self.neutron = neutron.Neutron()
-        self.player1 = humanPlayer.HumanPlayer()
-        self.player2 = humanPlayer.HumanPlayer()
-        self.player1.initialize("Jogador Próton", 1)
-        self.player2.initialize("Jogador Elétron", 2)
-        self.matchStatus = -1
+        self._neutron = neutron.Neutron()
+        self._player1 = humanPlayer.HumanPlayer()
+        self._player2 = humanPlayer.HumanPlayer()
+        self._player1.initialize("Jogador Próton", 1)
+        self._player2.initialize("Jogador Elétron", 2)
+        self._matchStatus = -1
+        self._statusMessage = None
 
         # Define as posicoes no "backend"
 
-        self.fields = []  # tabuleiro
-        self.neutronPosition = [2, 2]
-        self.aMovePiece = None
-        self.message = 1
-        self.passedFirstMatch = False
+        self._fields = []  # tabuleiro
+        self._neutronPosition = [2, 2]
+        self._aMovePiece = None
+        self._message = 1
+        self._passedFirstMatch = False
         self.initialPieces()
 
     def getPassedFirstMatch(self):
         # Retorna bool caso ja passou a primeira jogada(onde nao controla neutron)
-        return self.passedFirstMatch
+        return self._passedFirstMatch
 
     def setFirstMatch(self, boolean):
         # Define bool de primeira jogada
-        self.passedFirstMatch = boolean
+        self._passedFirstMatch = boolean
 
     def initialPieces(self):
         # Define as posicaos iniciais do tabuleiro
@@ -48,14 +49,14 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             column = []
             for x in range(5):
                 column.append(field.Field(None))
-            self.fields.append(column)
+            self._fields.append(column)
 
         for i in range(5):
-            self.fields[i][0] = field.Field(self.player1)
+            self._fields[i][0] = field.Field(self._player1)
         for i in range(5):
-            self.fields[i][4] = field.Field(self.player2)
+            self._fields[i][4] = field.Field(self._player2)
 
-        self.fields[2][2] = field.Field(self.neutron)
+        self._fields[2][2] = field.Field(self._neutron)
 
     def getStatus(self):
         # Retorna o estado do jogo
@@ -63,11 +64,11 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         # 0 - vez  de selecionar a peca do time
         # 1 - vez de selecionar local vazio para onde mover a peca time
         # 2 - vez de selecionar local vazio para onde mover o  neutron
-        return self.matchStatus
+        return self._matchStatus
 
     def setStatus(self, value):
         # Define o estado do jogo
-        self.matchStatus = value
+        self._matchStatus = value
 
     def getStatusMessage(self):
         # Retorna a mensagem de estado
@@ -75,69 +76,69 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         jogador = (self.getEnabledPlayer().getName())
 
         if (status == 0):
-            self.statusMessage = (jogador + " - Selecione uma peça sua para mover - status0")
+            self._statusMessage = (jogador + " - Selecione uma peça sua para mover - status0")
         elif (status == 1):
-            self.statusMessage = (jogador + " - Selecione a posição para mover sua peça - status1")
+            self._statusMessage = (jogador + " - Selecione a posição para mover sua peça - status1")
         elif (status == 2):
-            self.statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status2")
+            self._statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status2")
         else:
-            self.statusMessage = status
-        return self.statusMessage
+            self._statusMessage = status
+        return self._statusMessage
 
     def setMessage(self, message):
-        self.message = message
+        self._message = message
 
     def getMessage(self):
         # Retorna a mensagem de advertencia
-        message = self.message
+        message = self._message
         jogador = (self.getEnabledPlayer().getName())
 
         if (message == 1):  # 1+ - status -1 , o
-            self.message = ""
+            self._message = ""
         elif (message == 2):
-            self.message = ("Local vazio. Jogue novamente")
+            self._message = ("Local vazio. Jogue novamente")
 
         elif (message == 10):  # 10+ - status 10
-            self.message = ""
+            self._message = ""
         elif (message == 11):
-            self.message = ("Local incorreto. Jogue novamente")
+            self._message = ("Local incorreto. Jogue novamente")
 
         elif (message == 20):  # 20+ - status 20
-            self.message = ""
+            self._message = ""
 
         elif (message == 30):
-            self.message = ("A peça clicada é do oponente! Jogue novamente")
+            self._message = ("A peça clicada é do oponente! Jogue novamente")
         elif (message == 31):
-            self.message = ("A peça clicada é o Neutron! Jogue novamente")
+            self._message = ("A peça clicada é o Neutron! Jogue novamente")
         elif (message == 32):
-            self.message = ("")
+            self._message = ("")
 
-        return self.message
+        return self._message
 
     def getField(self, aMove):
         # Retorna o estado da posicao indicada
         x = aMove.getLine() - 1
         y = aMove.getColumn() - 1
-        return self.fields[x][y]
+        return self._fields[x][y]
 
     def getEnabledPlayer(self):
         # Retorna o jogador da rodada
-        if self.player1.getTurn():
-            return self.player1
+        if self._player1.getTurn():
+            return self._player1
         else:
-            return self.player2
+            return self._player2
 
     def getDisabledPlayer(self):
         # Retorna o jogador da proxima rodada
-        if self.player1.getTurn():
-            return self.player2
+        if self._player1.getTurn():
+            return self._player2
         else:
-            return self.player1
+            return self._player1
 
     def getValue(self, x, y):
         # Retorna o tipo de peça de um campo
-        if (self.fields[x][y].occupied()):
-            value = (self.fields[x][y].getOccupant()).getSymbol()
+        if (self._fields[x][y].occupied()):
+            value = (self._fields[x][y].getOccupant()).getSymbol()
         else:
             value = 0
         return value
@@ -151,14 +152,14 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         list_0_to_4 = [0, 1, 2, 3, 4]
         if x_difference == 0 and y_difference > 0:
             for i in range(abs(y_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start][y_start + i + 1].occupied():
+                if self._fields[x_start][y_start + i + 1].occupied():
                     legit_linear = False
                     break
 
             if legit_linear:
                 for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
                     try:
-                        if  not self.fields[x_final][y_final + 1].occupied():
+                        if  not self._fields[x_final][y_final + 1].occupied():
                             if y_final + 1 in list_0_to_4:
                                 y_final = y_final + 1
                     except IndexError:
@@ -166,14 +167,14 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         elif x_difference == 0 and y_difference < 0:
             for i in range(abs(y_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start][y_start - i - 1].occupied():
+                if self._fields[x_start][y_start - i - 1].occupied():
                     legit_linear = False
                     break
 
             if legit_linear:
                 for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
                     try:
-                        if  not self.fields[x_final][y_final - 1].occupied():
+                        if  not self._fields[x_final][y_final - 1].occupied():
                             if y_final - 1 in list_0_to_4:
                                 y_final = y_final - 1
                     except IndexError:
@@ -181,14 +182,14 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         elif y_difference == 0 and x_difference > 0:
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start + 1 + i][y_start].occupied():
+                if self._fields[x_start + 1 + i][y_start].occupied():
                     legit_linear = False
                     break
 
             if legit_linear:
                 for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
                     try:
-                        if  not self.fields[x_final + 1][y_final].occupied():
+                        if  not self._fields[x_final + 1][y_final].occupied():
                             if x_final + 1 in list_0_to_4:
                                 x_final = x_final + 1
                     except IndexError:
@@ -196,14 +197,14 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         elif y_difference == 0 and x_difference < 0:
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start - 1 - i][y_start].occupied():
+                if self._fields[x_start - 1 - i][y_start].occupied():
                     legit_linear = False
                     break
 
             if legit_linear:
                 for j in range(1, 4, 1):  # tenta mover a mais caso for casas vazias
                     try:
-                        if  not self.fields[x_final - 1][y_final].occupied():
+                        if  not self._fields[x_final - 1][y_final].occupied():
                             if x_final - 1 in list_0_to_4:
                                 x_final = x_final - 1
                     except IndexError:
@@ -214,11 +215,11 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
     def movePiece(self, aMoveDestiny, player):
         if player:
-            x_start = self.aMovePiece.getLine() - 1
-            y_start = self.aMovePiece.getColumn() - 1
+            x_start = self._aMovePiece.getLine() - 1
+            y_start = self._aMovePiece.getColumn() - 1
         else:
-            x_start = self.neutronPosition[0]
-            y_start = self.neutronPosition[1]
+            x_start = self._neutronPosition[0]
+            y_start = self._neutronPosition[1]
 
         x_final = aMoveDestiny.getLine() - 1
         y_final = aMoveDestiny.getColumn() - 1
@@ -244,13 +245,13 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         list_0_to_4 = [0, 1, 2, 3, 4]
         if x_difference > 0 and y_difference > 0:
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start + i + 1][y_start + i + 1].occupied():
+                if self._fields[x_start + i + 1][y_start + i + 1].occupied():
                     legit_diagonal = False
                     break
 
             for j in range(1, 4, 1):
                 try:
-                    if not self.fields[x_final + 1][y_final + 1].occupied():
+                    if not self._fields[x_final + 1][y_final + 1].occupied():
                         if x_final + 1 in list_0_to_4 and y_final + 1 in list_0_to_4:
                             x_final = x_final + 1
                             y_final = y_final + 1
@@ -259,13 +260,13 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         elif x_difference > 0 > y_difference:
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start + i + 1][y_start - i - 1].occupied():
+                if self._fields[x_start + i + 1][y_start - i - 1].occupied():
                     legit_diagonal = False
                     break
 
             for j in range(1, 4, 1):
                 try:
-                    if not self.fields[x_final + 1][y_final - 1].occupied():
+                    if not self._fields[x_final + 1][y_final - 1].occupied():
                         if x_final + 1 in list_0_to_4 and y_final - 1 in list_0_to_4:
                             x_final = x_final + 1
                             y_final = y_final - 1
@@ -274,13 +275,13 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         elif x_difference < 0 and y_difference > 0:  # MAIN
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start - i - 1][y_start + i + 1].occupied():
+                if self._fields[x_start - i - 1][y_start + i + 1].occupied():
                     legit_diagonal = False
                     break
 
             for j in range(1, 4, 1):
                 try:
-                    if not self.fields[x_final - 1][y_final + 1].occupied():
+                    if not self._fields[x_final - 1][y_final + 1].occupied():
                         if x_final - 1 in list_0_to_4 and y_final + 1 in list_0_to_4:
                             x_final = x_final - 1
                             y_final = y_final + 1
@@ -289,13 +290,13 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
         elif x_difference < 0 and y_difference < 0:
             for i in range(abs(x_difference)):  # Checa se o caminho esta livre
-                if self.fields[x_start - i - 1][y_start - i - 1].occupied():
+                if self._fields[x_start - i - 1][y_start - i - 1].occupied():
                     legit_diagonal = False
                     break
 
             for j in range(1, 4, 1):
                 try:
-                    if not self.fields[x_final - 1][y_final - 1].occupied():
+                    if not self._fields[x_final - 1][y_final - 1].occupied():
                         if x_final - 1 in list_0_to_4 and y_final - 1 in list_0_to_4:
                             x_final = x_final - 1
                             y_final = y_final - 1
@@ -306,13 +307,13 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
     def moveResults(self, player, legit_move, x_start, x_final, y_start, y_final):
         if legit_move:
-            self.fields[x_start][y_start].empty()
+            self._fields[x_start][y_start].empty()
             if player:
-                    self.aMovePiece = None
-                    self.fields[x_final][y_final].setOccupant(player)
+                    self._aMovePiece = None
+                    self._fields[x_final][y_final].setOccupant(player)
             else: # move o neutron
-                    self.fields[x_final][y_final].setOccupant(self.neutron)
-                    self.neutronPosition = [x_final, y_final]
+                    self._fields[x_final][y_final].setOccupant(self._neutron)
+                    self._neutronPosition = [x_final, y_final]
 
     def proceedMove(self, aMove):
         # Realiza a jogada, e testa qual condica
@@ -365,12 +366,12 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                 if status == 0:  # X + selecionou peça certa
                     self.setMessage(10)
                     self.setStatus(1)
-                    self.aMovePiece = aMove
+                    self._aMovePiece = aMove
 
                 else:  # X + devia ser para onde VAZIO
                     self.setMessage(11)
 
-            elif selectedField.getOccupant() == self.neutron:  # Clicou no Neutron
+            elif selectedField.getOccupant() == self._neutron:  # Clicou no Neutron
                 self.setMessage(31)
             else:  # Sobra apenas clicar no oponente
                 self.setMessage(30)
@@ -380,10 +381,10 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         self.reset()
         self.setFirstMatch(False)
         if random.randint(1, 2) == 1:
-            aMove = self.player1.enable()
+            aMove = self._player1.enable()
             self.proceedMove(aMove)
         else:
-            aMove = self.player2.enable()
+            aMove = self._player2.enable()
             self.proceedMove(aMove)
 
     def click(self, line, column):
@@ -398,8 +399,8 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         # Reinicia o tabuleiro com todas posicoes vazias
         for x in range(5):
             for y in range(5):
-                self.fields[x][y].empty()
-        self.player1.reset()
-        self.player2.reset()
+                self._fields[x][y].empty()
+        self._player1.reset()
+        self._player2.reset()
         self.initialPieces()
 

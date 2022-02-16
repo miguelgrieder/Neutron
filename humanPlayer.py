@@ -3,37 +3,35 @@ import move
 
 class HumanPlayer():
     def __init__(self):
-        self.symbol = None    #int
-        self.turn = False    #boll
-        self.name = ''    #string
+        self._symbol = None    #int
+        self._turn = False    #boll
+        self._name = ''    #string
 
     #@abstractmethod
     def enable(self):
         pass
 
     def initialize(self, aName, aSymbol):
-        self.symbol = aSymbol    #int
-        self.name = aName        #string
-        self.turn = False        #bool
-        self.winner = False        #bool
+        self._symbol = aSymbol    #int
+        self._name = aName        #string
+        self._turn = False        #bool
+        self._winner = False        #bool
 
     def reset(self):
-        self.turn = False		
-
+        self._turn = False		
 
     def disable(self):
-        self.turn = False
+        self._turn = False
      
     def getSymbol(self):
-        return self.symbol
+        return self._symbol
      
     def getName(self):
-        return self.name
+        return self._name
     
-     
     def getTurn(self):
-        return self.turn
+        return self._turn
 
     def enable(self):
-        self.turn = True
+        self._turn = True
         return move.Move(0, 0)

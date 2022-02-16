@@ -4,13 +4,13 @@ class Field:
         self.setOccupant(player)
 
     def occupied(self):
-        return (self.occupant is not None)
+        return (self._occupant is not None)
 
     def setOccupant(self, aPlayer):
-        self.occupant = aPlayer
+        self._occupant = aPlayer
 
     def getOccupant(self):
-        return self.occupant
+        return self._occupant
 
     def empty(self):
-        self.occupant = None
+        self._occupant = None

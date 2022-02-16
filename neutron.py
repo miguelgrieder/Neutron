@@ -1,8 +1,8 @@
 class Neutron:
     def __init__(self) -> None:
-        self.num = 3
+        self._num = 3
     
     def getSymbol(self):
-        return self.num
+        return self._num
     
 
