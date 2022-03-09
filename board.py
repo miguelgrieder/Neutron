@@ -75,12 +75,12 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         status = self.getStatus()
         jogador = (self.getEnabledPlayer().getName())
 
-        if (status == 0):
-            self._statusMessage = (jogador + " - Selecione uma peça sua para mover - status0")
-        elif (status == 1):
-            self._statusMessage = (jogador + " - Selecione a posição para mover sua peça - status1")
+        if (status == 1):
+            self._statusMessage = (jogador + " - Selecione uma peça sua para mover - status1")
         elif (status == 2):
-            self._statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status2")
+            self._statusMessage = (jogador + " - Selecione a posição para mover sua peça - status2")
+        elif (status == 0):
+            self._statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status0")
         else:
             self._statusMessage = status
         return self._statusMessage
@@ -322,50 +322,39 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         disabledPlayer = self.getDisabledPlayer()
         status = self.getStatus()
         if status == -1:
-            self.setStatus(0)
+            self.setStatus(0) if self.getPassedFirstMatch() else self.setStatus(1)
             self.setMessage(1)
 
         else:
             if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
-                if status == 0:  # x + na  vez selecionar peça time
+                if status == 1:  # x + na  vez selecionar peça time
                     self.setMessage(2)
 
-                elif status == 2:  # move o neutron
+                elif status == 0:  # move o neutron
                     couldMove = self.moveNeutron(aMove)
                     if couldMove:
-                        enabledPlayer.disable()
-                        newMove = disabledPlayer.enable()
-                        self.setStatus(0)
+                        self.setStatus(1)
                         self.setMessage(1)
-                        if newMove.getLine() != 0:
-                            self.proceedMove(newMove)
                     else:
                         self.setMessage(11)
 
 
-                elif status == 1:  # Move a peca do time
-                    if self.getPassedFirstMatch():
-                        couldMove = self.movePiece(aMove, enabledPlayer)
-                        if couldMove:
-                            self.setStatus(2)
-                            self.setMessage(20)
-                    else:  # Primeira rodada - não tem status 2 (neutron)
-                        couldMove = self.movePiece(aMove, enabledPlayer)
-                        if couldMove:
-                            self.setFirstMatch(True)
-                            enabledPlayer.disable()
-                            newMove = disabledPlayer.enable()
-                            self.setStatus(0)
-                            self.setMessage(1)
-                            if (newMove.getLine() != 0):
-                                self.proceedMove(newMove)
-
+                elif status == 2:  # Move a peca do time
+                     couldMove = self.movePiece(aMove, enabledPlayer)
+                     if couldMove:
+                         self.setStatus(0)
+                         self.setMessage(20)
+                         self.setFirstMatch(True)
+                         enabledPlayer.disable()
+                         newMove = disabledPlayer.enable()
+                         if newMove.getLine() != 0:
+                             self.proceedMove(newMove)
 
             elif selectedField.getOccupant() == enabledPlayer:  # Clicou na peça do mesmo time
 
-                if status == 0:  # X + selecionou peça certa
+                if status == 1:  # X + selecionou peça certa
                     self.setMessage(10)
-                    self.setStatus(1)
+                    self.setStatus(2)
                     self._aMovePiece = aMove
 
                 else:  # X + devia ser para onde VAZIO
