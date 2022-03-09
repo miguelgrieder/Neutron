@@ -75,12 +75,12 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         status = self.getStatus()
         jogador = (self.getEnabledPlayer().getName())
 
-        if (status == 1):
-            self._statusMessage = (jogador + " - Selecione uma peça sua para mover - status1")
-        elif (status == 2):
-            self._statusMessage = (jogador + " - Selecione a posição para mover sua peça - status2")
-        elif (status == 0):
+        if status == 0:
             self._statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status0")
+        elif status == 1:
+            self._statusMessage = (jogador + " - Selecione uma peça sua para mover - status1")
+        elif status == 2:
+            self._statusMessage = (jogador + " - Selecione a posição para mover sua peça - status2")
         else:
             self._statusMessage = status
         return self._statusMessage
@@ -89,29 +89,27 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         self._message = message
 
     def getMessage(self):
-        # Retorna a mensagem de advertencia
         message = self._message
-        jogador = (self.getEnabledPlayer().getName())
 
-        if (message == 1):  # 1+ - status -1 , o
+        if message == 1:
             self._message = ""
-        elif (message == 2):
-            self._message = ("Local vazio. Jogue novamente")
+        elif message == 2:
+            self._message = "Local vazio. Jogue novamente"
 
-        elif (message == 10):  # 10+ - status 10
+        elif message == 10:  # 10+ - status 10
             self._message = ""
-        elif (message == 11):
-            self._message = ("Local incorreto. Jogue novamente")
+        elif message == 11:
+            self._message = "Local incorreto. Jogue novamente"
 
-        elif (message == 20):  # 20+ - status 20
+        elif message == 20:  # 20+ - status 20
             self._message = ""
 
-        elif (message == 30):
-            self._message = ("A peça clicada é do oponente! Jogue novamente")
-        elif (message == 31):
-            self._message = ("A peça clicada é o Neutron! Jogue novamente")
-        elif (message == 32):
-            self._message = ("")
+        elif message == 30:
+            self._message = "A peça clicada é do oponente! Jogue novamente"
+        elif message == 31:
+            self._message = "A peça clicada é o Neutron! Jogue novamente"
+        elif message == 32:
+            self._message = ""
 
         return self._message
 
@@ -137,7 +135,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
     def getValue(self, x, y):
         # Retorna o tipo de peça de um campo
-        if (self._fields[x][y].occupied()):
+        if self._fields[x][y].occupied():
             value = (self._fields[x][y].getOccupant()).getSymbol()
         else:
             value = 0
@@ -315,6 +313,61 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                     self._fields[x_final][y_final].setOccupant(self._neutron)
                     self._neutronPosition = [x_final, y_final]
 
+    def moveStatus0(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
+        if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
+              # move o neutron
+            couldMove = self.moveNeutron(aMove)
+            if couldMove:
+                self.setStatus(1)
+                self.setMessage(1)
+            else:
+                self.setMessage(11)
+
+        elif selectedField.getOccupant() == enabledPlayer:  # Clicou na peça do mesmo time
+            self.setMessage(11)
+
+        elif selectedField.getOccupant() == self._neutron:  # Clicou no Neutron
+            self.setMessage(31)
+        else:  # Sobra apenas clicar no oponente
+            self.setMessage(30)
+
+    def moveStatus1(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
+        if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
+              # x + na  vez selecionar peça time
+            self.setMessage(2)
+
+        elif selectedField.getOccupant() == enabledPlayer:  # Clicou na peça do mesmo time
+
+            if status == 1:  # X + selecionou peça certa
+                self.setMessage(10)
+                self.setStatus(2)
+                self._aMovePiece = aMove
+
+        elif selectedField.getOccupant() == self._neutron:  # Clicou no Neutron
+            self.setMessage(31)
+        else:  # Sobra apenas clicar no oponente
+            self.setMessage(30)
+
+    def moveStatus2(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
+        if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
+              # Move a peca do time
+            couldMove = self.movePiece(aMove, enabledPlayer)
+            if couldMove:
+                self.setStatus(0)
+                self.setMessage(20)
+                self.setFirstMatch(True)
+                enabledPlayer.disable()
+                newMove = disabledPlayer.enable()
+                if newMove.getLine() != 0:
+                    self.proceedMove(newMove)
+
+        elif selectedField.getOccupant() == enabledPlayer:  # Clicou na peça do mesmo time
+            self.setMessage(11)
+        elif selectedField.getOccupant() == self._neutron:
+            self.setMessage(31)
+        else:  # Sobra apenas clicar no oponente
+            self.setMessage(30)
+
     def proceedMove(self, aMove):
         # Realiza a jogada, e testa qual condica
         selectedField = self.getField(aMove)
@@ -324,46 +377,12 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         if status == -1:
             self.setStatus(0) if self.getPassedFirstMatch() else self.setStatus(1)
             self.setMessage(1)
-
         else:
-            if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
-                if status == 1:  # x + na  vez selecionar peça time
-                    self.setMessage(2)
+            dict_methods = {0: self.moveStatus0, 1: self.moveStatus1, 2: self.moveStatus2}
+            func = dict_methods[status]
+            func_args = [aMove, selectedField, status, enabledPlayer, disabledPlayer]
+            func(*func_args)
 
-                elif status == 0:  # move o neutron
-                    couldMove = self.moveNeutron(aMove)
-                    if couldMove:
-                        self.setStatus(1)
-                        self.setMessage(1)
-                    else:
-                        self.setMessage(11)
-
-
-                elif status == 2:  # Move a peca do time
-                     couldMove = self.movePiece(aMove, enabledPlayer)
-                     if couldMove:
-                         self.setStatus(0)
-                         self.setMessage(20)
-                         self.setFirstMatch(True)
-                         enabledPlayer.disable()
-                         newMove = disabledPlayer.enable()
-                         if newMove.getLine() != 0:
-                             self.proceedMove(newMove)
-
-            elif selectedField.getOccupant() == enabledPlayer:  # Clicou na peça do mesmo time
-
-                if status == 1:  # X + selecionou peça certa
-                    self.setMessage(10)
-                    self.setStatus(2)
-                    self._aMovePiece = aMove
-
-                else:  # X + devia ser para onde VAZIO
-                    self.setMessage(11)
-
-            elif selectedField.getOccupant() == self._neutron:  # Clicou no Neutron
-                self.setMessage(31)
-            else:  # Sobra apenas clicar no oponente
-                self.setMessage(30)
 
     def startMatch(self):
         # Comeca uma nova partida
