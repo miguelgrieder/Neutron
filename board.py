@@ -308,6 +308,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
 
     def checkWin(self):
+        # Verifica se algum time venceu
         y_final = self._neutronPosition[1]
         if y_final == 0: # proton venceu
             self.setStatus(3)
@@ -318,22 +319,23 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             self.setMessage(92)
 
     def moveStatus0(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
-        if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
-              # move o neutron
+        # Move neutron
+        if not selectedField.occupied():
             couldMove = self.moveNeutron(aMove)
             if couldMove:
                 self.setStatus(1)
                 self.setMessage(1)
             else:
-                self.setMessage(2)
+                self.setMessage(3)
             self.checkWin()
         else:
             self.setMessage(2)
 
     def moveStatus1(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
-        if selectedField.getOccupant() == enabledPlayer:  # Clicou na peça do mesmo time
+        # Seleciona peça do time
+        if selectedField.getOccupant() == enabledPlayer:
 
-            if status == 1:  # X + selecionou peça certa
+            if status == 1:
                 self.setMessage(1)
                 self.setStatus(2)
                 self._aMovePiece = aMove
@@ -341,8 +343,8 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             self.setMessage(2)
 
     def moveStatus2(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
-        if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
-              # Move a peca do time
+        # Move peça do time
+        if not selectedField.occupied():
             couldMove = self.movePiece(aMove, enabledPlayer)
             if couldMove:
                 self.setStatus(0)
@@ -352,15 +354,18 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                 newMove = disabledPlayer.enable()
                 if newMove.getLine() != 0:
                     self.proceedMove(newMove)
+            else:
+                self.setMessage(3)
         else:
             self.setMessage(2)
 
     def finishedMatchStatus3(self, *args):
+        # Fim daa partidaa
         self.setStatus(-1)
         self.setMessage(1)
 
     def proceedMove(self, aMove):
-        # Realiza a jogada, e testa qual condica
+        # Procede a jogada, e seleciona o tipo de jogada conforme o status
         selectedField = self.getField(aMove)
         enabledPlayer = self.getEnabledPlayer()
         disabledPlayer = self.getDisabledPlayer()
