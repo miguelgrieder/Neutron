@@ -55,7 +55,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             self._fields[i][0] = field.Field(self._player1)
         for i in range(5):
             self._fields[i][4] = field.Field(self._player2)
-
+        self._neutronPosition = [2, 2]
         self._fields[2][2] = field.Field(self._neutron)
 
     def getStatus(self):
@@ -75,12 +75,16 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         status = self.getStatus()
         jogador = (self.getEnabledPlayer().getName())
 
-        if status == 0:
+        if status == -1:
+            self._statusMessage = "Clique para reiniciar o jogo!"
+        elif status == 0:
             self._statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status0")
         elif status == 1:
             self._statusMessage = (jogador + " - Selecione uma peça sua para mover - status1")
         elif status == 2:
             self._statusMessage = (jogador + " - Selecione a posição para mover sua peça - status2")
+        elif status == 3:
+            self._statusMessage = "Fim de jogo! - status3"
         else:
             self._statusMessage = status
         return self._statusMessage
@@ -110,6 +114,10 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             self._message = "A peça clicada é o Neutron! Jogue novamente"
         elif message == 32:
             self._message = ""
+        elif message == 91:
+            self._message = "O Próton Venceu!"
+        elif message == 92:
+            self._message = "O Elétron Venceu!"
 
         return self._message
 
@@ -313,6 +321,19 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                     self._fields[x_final][y_final].setOccupant(self._neutron)
                     self._neutronPosition = [x_final, y_final]
 
+
+    def checkWin(self):
+        y_final = self._neutronPosition[1]
+        if y_final == 0:
+            print('proton win')
+            self.setStatus(3)
+            self.setMessage(91)
+
+        if y_final == 4:
+            print('eletron win')
+            self.setStatus(3)
+            self.setMessage(92)
+
     def moveStatus0(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
         if not selectedField.occupied():  # CLIQUE EM LOCAL VAZIO
               # move o neutron
@@ -322,6 +343,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                 self.setMessage(1)
             else:
                 self.setMessage(11)
+            self.checkWin()
 
         elif selectedField.getOccupant() == enabledPlayer:  # Clicou na peça do mesmo time
             self.setMessage(11)
@@ -368,6 +390,10 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         else:  # Sobra apenas clicar no oponente
             self.setMessage(30)
 
+    def finishedMatchStatus3(self, *args):
+        self.setStatus(-1)
+        self.setMessage(1)
+
     def proceedMove(self, aMove):
         # Realiza a jogada, e testa qual condica
         selectedField = self.getField(aMove)
@@ -378,7 +404,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             self.setStatus(0) if self.getPassedFirstMatch() else self.setStatus(1)
             self.setMessage(1)
         else:
-            dict_methods = {0: self.moveStatus0, 1: self.moveStatus1, 2: self.moveStatus2}
+            dict_methods = {0: self.moveStatus0, 1: self.moveStatus1, 2: self.moveStatus2, 3:self.finishedMatchStatus3}
             func = dict_methods[status]
             func_args = [aMove, selectedField, status, enabledPlayer, disabledPlayer]
             func(*func_args)
