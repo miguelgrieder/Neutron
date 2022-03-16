@@ -15,7 +15,6 @@ class HumanPlayer():
         self._symbol = aSymbol    #int
         self._name = aName        #string
         self._turn = False        #bool
-        self._winner = False        #bool
 
     def reset(self):
         self._turn = False		
