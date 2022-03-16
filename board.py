@@ -325,9 +325,9 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             if couldMove:
                 self.setStatus(1)
                 self.setMessage(1)
+                self.checkWin()
             else:
                 self.setMessage(3)
-            self.checkWin()
         else:
             self.setMessage(2)
 
@@ -335,10 +335,9 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         # Seleciona peça do time
         if selectedField.getOccupant() == enabledPlayer:
 
-            if status == 1:
-                self.setMessage(1)
-                self.setStatus(2)
-                self._aMovePiece = aMove
+            self.setMessage(1)
+            self.setStatus(2)
+            self._aMovePiece = aMove
         else:
             self.setMessage(2)
 
