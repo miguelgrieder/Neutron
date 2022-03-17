@@ -222,7 +222,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             self.moveResults(player, legit_linear, x_start, x_final, y_start, y_final)
             return legit_linear
 
-        if abs(x_difference) == abs(y_difference): #Checa se o movimento diagonal é valido
+        elif abs(x_difference) == abs(y_difference): #Checa se o movimento diagonal é valido
             legit_diagonal, x_final, y_final = self.moveDiagonal( x_difference, y_difference, x_start, x_final,y_start, y_final)
             self.moveResults(player, legit_diagonal, x_start, x_final,y_start, y_final)
             return legit_diagonal
