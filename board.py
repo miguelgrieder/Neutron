@@ -5,14 +5,6 @@ import random
 import neutron
 
 
-#    Estados do jogo
-# 1 - Jogo nao iniciado
-# 2 - Proximo jogador
-# 3 - Jogada iregular
-# 4 - Jogo finalizado com vencedor
-# 5 - Jogo finalizado empatado
-
-
 class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
     def __init__(self):
@@ -61,9 +53,10 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
     def getStatus(self):
         # Retorna o estado do jogo
         # -1 - antes de partida iniciar
-        # 0 - vez  de selecionar a peca do time
-        # 1 - vez de selecionar local vazio para onde mover a peca time
-        # 2 - vez de selecionar local vazio para onde mover o  neutron
+        # 0 - vez de selecionar local vazio para onde mover o  neutron
+        # 1 - vez  de selecionar a peca do time
+        # 2 - vez de selecionar local vazio para onde mover a peca time
+        # 3 - jogo terminado com vencedor
         return self._matchStatus
 
     def setStatus(self, value):
@@ -134,9 +127,6 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             value = 0
         return value
 
-    def moveNeutron(self, aMove):
-        could_move = self.movePiece(aMove, None)
-        return could_move
 
     def linearCheck(self, x_difference, y_difference, x_start, x_final, y_start, y_final):
         legit_linear = True
@@ -223,7 +213,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             return legit_linear
 
         elif abs(x_difference) == abs(y_difference): #Checa se o movimento diagonal é valido
-            legit_diagonal, x_final, y_final = self.moveDiagonal( x_difference, y_difference, x_start, x_final,y_start, y_final)
+            legit_diagonal, x_final, y_final = self.diagonalCheck( x_difference, y_difference, x_start, x_final,y_start, y_final)
             self.moveResults(player, legit_diagonal, x_start, x_final,y_start, y_final)
             return legit_diagonal
 
@@ -231,7 +221,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
             return False
 
 
-    def moveDiagonal(self, x_difference, y_difference, x_start, x_final,y_start, y_final):
+    def diagonalCheck(self, x_difference, y_difference, x_start, x_final,y_start, y_final):
         legit_diagonal = True
         list_0_to_4 = [0, 1, 2, 3, 4]
         if x_difference > 0 and y_difference > 0:
@@ -321,7 +311,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
     def moveStatus0(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
         # Move neutron
         if not selectedField.occupied():
-            couldMove = self.moveNeutron(aMove)
+            couldMove = self.movePiece(aMove, None)
             if couldMove:
                 self.setStatus(1)
                 self.setMessage(1)
@@ -334,7 +324,6 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
     def moveStatus1(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
         # Seleciona peça do time
         if selectedField.getOccupant() == enabledPlayer:
-
             self.setMessage(1)
             self.setStatus(2)
             self._aMovePiece = aMove
@@ -350,9 +339,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
                 self.setMessage(1)
                 self.setFirstMatch(True)
                 enabledPlayer.disable()
-                newMove = disabledPlayer.enable()
-                if newMove.getLine() != 0:
-                    self.proceedMove(newMove)
+                disabledPlayer.enable()
             else:
                 self.setMessage(3)
         else:
@@ -369,26 +356,22 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         enabledPlayer = self.getEnabledPlayer()
         disabledPlayer = self.getDisabledPlayer()
         status = self.getStatus()
-        if status == -1:
-            self.setStatus(0) if self.getPassedFirstMatch() else self.setStatus(1)
-            self.setMessage(1)
-        else:
-            dict_methods = {0: self.moveStatus0, 1: self.moveStatus1, 2: self.moveStatus2, 3:self.finishedMatchStatus3}
-            func = dict_methods[status]
-            func_args = [aMove, selectedField, status, enabledPlayer, disabledPlayer]
-            func(*func_args)
 
+        dict_methods = {0: self.moveStatus0, 1: self.moveStatus1, 2: self.moveStatus2, 3:self.finishedMatchStatus3}
+        func = dict_methods[status]
+        func_args = [aMove, selectedField, status, enabledPlayer, disabledPlayer]
+        func(*func_args)
 
     def startMatch(self):
         # Comeca uma nova partida
         self.reset()
         self.setFirstMatch(False)
         if random.randint(1, 2) == 1:
-            aMove = self._player1.enable()
-            self.proceedMove(aMove)
+            self._player1.enable()
         else:
-            aMove = self._player2.enable()
-            self.proceedMove(aMove)
+             self._player2.enable()
+        self.setStatus(1)
+        self.setMessage(1)
 
     def click(self, line, column):
         # Realiza os processos ao jogador clicar em uma posicao
