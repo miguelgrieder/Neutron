@@ -324,7 +324,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
     def moveStatus1(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
         # Seleciona peça do time
         if selectedField.getOccupant() == enabledPlayer:
-            self.setMessage(1)
+            self.setMessage(f'Selecionado - linha: {aMove.getColumn()}, coluna: {aMove.getLine()}') # Sim, é trocado
             self.setStatus(2)
             self._aMovePiece = aMove
         else:

@@ -28,9 +28,11 @@ class Table:
         self._proton = PhotoImage(file="images/proton.gif")            #pyimage1
         self._eletron = PhotoImage(file="images/eletron.gif")        #pyimage2
         self._neutron = PhotoImage(file="images/neutron.png")    #pyimage3
+        self._proton_selected = PhotoImage(file="images/proton_selected.gif")  # pyimage1
+        self._eletron_selected = PhotoImage(file="images/eletron_selected.gif")  # pyimage2
 
-        recomecar = Button(self._mainWindow, text="Recomeçar", command=self.restart)
-        recomecar.place(x=30, y=600, width=100, height=20)
+        restart = Button(self._mainWindow, text="Recomeçar", command=self.restart)
+        restart.place(x=30, y=600, width=100, height=20)
         #Itnera sobre matrix, composto por column sendo uma linha de posicoes
         
 
@@ -86,6 +88,18 @@ class Table:
                     label['imag'] = self._eletron
                 elif value==3:
                     label['imag'] = self._neutron
+        selected_piece = self._myBoard._aMovePiece
+        if selected_piece:
+            line = selected_piece.getColumn() - 1
+            coluna = selected_piece.getLine() - 1
+
+            label = self._matrix[coluna][line]
+            value = self._myBoard.getValue(coluna, line)
+
+            if value == 1:
+                label['imag'] = self._proton_selected
+            elif value == 2:
+                label['imag'] = self._eletron_selected
 
 
 Table()

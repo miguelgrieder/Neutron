@@ -5,10 +5,10 @@ class Move:
         self._column = argColumn
 
     def getLine(self):
-        return self._line  
+        return self._line
     
     def getColumn(self):
-        return self._column        
+        return self._column
     
     def setValues (self, argLine, argColumn):
         self._line = argLine
