@@ -29,6 +29,8 @@ class Table:
         self._eletron = PhotoImage(file="images/eletron.gif")        #pyimage2
         self._neutron = PhotoImage(file="images/neutron.png")    #pyimage3
 
+        recomecar = Button(self._mainWindow, text="Recomeçar", command=self.restart)
+        recomecar.place(x=30, y=600, width=100, height=20)
         #Itnera sobre matrix, composto por column sendo uma linha de posicoes
         
 
@@ -47,7 +49,11 @@ class Table:
                 field.bind("<Button-1>", lambda event, line=y+1, column=x+1: self.click(event, line, column))    #    inverted
                 column.append(field)
             self._matrix.append(column)
-            
+
+    def restart(self):
+        self._myBoard.startMatch()
+        self.updateUserInterface()
+
     def labels(self):
         #Adiciona os textos informativos na interface
         self._labelMessage = Label(self._messageFrame, bg="black",fg="white", text='')
