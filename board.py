@@ -37,6 +37,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
 
     def initialPieces(self):
         # Define as posicaos iniciais do tabuleiro
+        self._aMovePiece = None
         for y in range(5):
             column = []
             for x in range(5):

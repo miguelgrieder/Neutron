@@ -3,13 +3,12 @@
 	<TreeState name="ModelRepository" viewX="0" viewY="0">
 		<ExpandedPath>ModelRepository</ExpandedPath>
 	</TreeState>
-	<TreeState name="DiagramNavigator" viewX="0" viewY="0">
+	<TreeState name="DiagramNavigator" viewX="0" viewY="54">
 		<ExpandedPath>DiagramNavigator</ExpandedPath>
 		<ExpandedPath>DiagramNavigator,UML Diagrams</ExpandedPath>
 		<ExpandedPath>UseCaseDiagram</ExpandedPath>
 		<ExpandedPath>ClassDiagram</ExpandedPath>
 		<ExpandedPath>InteractionDiagram</ExpandedPath>
-		<ExpandedPath>StateDiagram</ExpandedPath>
 		<ExpandedPath>ActivityDiagram</ExpandedPath>
 		<ExpandedPath>InteractionOverviewDiagram</ExpandedPath>
 		<ExpandedPath>DiagramNavigator,Requirements Capturing</ExpandedPath>
@@ -29,7 +28,7 @@
 		<ExpandedPath>DiagramNavigator,Network Design</ExpandedPath>
 		<ExpandedPath>DiagramNavigator,General</ExpandedPath>
 		<ExpandedPath>DiagramNavigator,Others</ExpandedPath>
-		<SelectedPath>InteractionDiagram,2dOnRP6D.AAAAQqH</SelectedPath>
+		<SelectedPath>ActivityDiagram,PPSLX36D.AAAASFc</SelectedPath>
 	</TreeState>
 	<TreeState name="ClassBrowser" viewX="0" viewY="0"/>
 	<TreeState name="LogicalView" viewX="0" viewY="0"/>
