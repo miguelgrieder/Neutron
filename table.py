@@ -90,11 +90,11 @@ class Table:
                     label['imag'] = self._neutron
         selected_piece = self._myBoard._aMovePiece
         if selected_piece:
-            line = selected_piece.getColumn() - 1
-            coluna = selected_piece.getLine() - 1
+            line = selected_piece.getLine() - 1
+            column = selected_piece.getColumn() - 1
 
-            label = self._matrix[coluna][line]
-            value = self._myBoard.getValue(coluna, line)
+            label = self._matrix[line][column]
+            value = self._myBoard.getValue(line, column)
 
             if value == 1:
                 label['imag'] = self._proton_selected

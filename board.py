@@ -72,13 +72,13 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
         if status == -1:
             self._statusMessage = "Clique para reiniciar o jogo!"
         elif status == 0:
-            self._statusMessage = (jogador + " - Selecione a posição para mover o Neutron - status0")
+            self._statusMessage = (jogador + " - Selecione a posição para mover o Neutron")
         elif status == 1:
-            self._statusMessage = (jogador + " - Selecione uma peça sua para mover - status1")
+            self._statusMessage = (jogador + " - Selecione uma peça sua para mover")
         elif status == 2:
-            self._statusMessage = (jogador + " - Selecione a posição para mover sua peça - status2")
+            self._statusMessage = (jogador + " - Selecione a posição para mover sua peça")
         elif status == 3:
-            self._statusMessage = "Fim de jogo! - status3"
+            self._statusMessage = "Fim de jogo!"
         else:
             self._statusMessage = status
         return self._statusMessage
@@ -325,7 +325,7 @@ class Board:  # Realiza a gerencia real do tabuleiro "back-end"
     def moveStatus1(self, aMove, selectedField, status, enabledPlayer, disabledPlayer):
         # Seleciona peça do time
         if selectedField.getOccupant() == enabledPlayer:
-            self.setMessage(f'Selecionado - linha: {aMove.getColumn()}, coluna: {aMove.getLine()}') # Sim, é trocado
+            self.setMessage(1)
             self.setStatus(2)
             self._aMovePiece = aMove
         else:
