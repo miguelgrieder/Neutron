@@ -4,12 +4,8 @@ import move
 class HumanPlayer():
     def __init__(self):
         self._symbol = None    #int
-        self._turn = False    #boll
+        self._turn = None    #boll
         self._name = ''    #string
-
-    #@abstractmethod
-    def enable(self):
-        pass
 
     def initialize(self, aName, aSymbol):
         self._symbol = aSymbol    #int
